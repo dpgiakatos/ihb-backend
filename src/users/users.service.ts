@@ -16,6 +16,15 @@ export class UsersService {
     }
 
     async create(user: User) {
-        this.usersRepository.create({id: user.id, email: user.email, password: await hash(user.password, 10)});
+        const newUser = this.usersRepository.create({
+            id: user.id,
+            email: user.email,
+            password: await hash(user.password, 10)
+        });
+        try {
+            await this.usersRepository.save(newUser);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
