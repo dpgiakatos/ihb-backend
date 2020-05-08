@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {UsersModule} from "../users/users.module";
-import {PassportModule} from "@nestjs/passport";
-import {LocalStrategy} from "./local.strategy";
+import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
-import {JwtModule} from "@nestjs/jwt";
-import {jwtConstants} from "./constants";
-import {JwtStrategy} from "./jwt.strategy";
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './constants';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Role } from './models/role.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles.guard';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
@@ -14,13 +18,21 @@ import {JwtStrategy} from "./jwt.strategy";
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: {expiresIn: '60s'}
-    })
+      signOptions: { expiresIn: '1d' }
+    }),
+    TypeOrmModule.forFeature([Role])
   ],
   providers: [
     AuthService,
-    LocalStrategy,
-    JwtStrategy
+    JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+    },
   ],
   controllers: [AuthController]
 })

@@ -1,9 +1,10 @@
-import {Column, Entity, PrimaryGeneratedColumn, Unique} from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique, OneToMany } from 'typeorm';
+import { Role } from '../auth/models/role.entity';
 
 @Entity()
-@Unique(["email"])
+@Unique(['email'])
 export class User {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -11,4 +12,7 @@ export class User {
 
     @Column()
     password: string;
+
+    @OneToMany(() => Role, role => role.user, { eager: true })
+    roles: Role[];
 }
