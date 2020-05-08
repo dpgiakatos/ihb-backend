@@ -1,5 +1,4 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
-import {User} from "../users/user.entity";
+import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity()
 export class Vaccination {
@@ -8,8 +7,4 @@ export class Vaccination {
 
     @Column()
     name: string;
-
-    @ManyToMany(type => User)
-    @JoinTable()
-    user: User[];
 }
