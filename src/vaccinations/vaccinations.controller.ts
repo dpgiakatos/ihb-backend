@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Vaccination } from './vaccination.entity';
 import { In, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
-import { resolveConfigFile } from 'prettier';
-import sync = resolveConfigFile.sync;
+import { ExtraVaccination } from './extra_vaccination.entity';
+import { writeHeapSnapshot } from 'v8';
 
 @Controller('dashboard')
 export class VaccinationsController {
@@ -15,17 +15,30 @@ export class VaccinationsController {
         @InjectRepository(Vaccination)
         private vaccinationRepository: Repository<Vaccination>,
         @InjectRepository(User)
-        private userRepository: Repository<User>
+        private userRepository: Repository<User>,
+        @InjectRepository(ExtraVaccination)
+        private extraVaccinationRepository: Repository<ExtraVaccination>
     ) {}
 
     @Get('vaccinations')
-    findAll() {
+    findAllVaccines() {
         return this.vaccinationRepository.find();
+    }
+
+    @Get('user_vaccines')
+    getUserVaccines() {
+        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
+        // return this.userRepository.find( {select: ['vaccination'], where: {id: userId}, relations: ['vaccination']});
+        return this.userRepository.createQueryBuilder('user')
+            .select('userId')
+            .where('user.id', {userId})
+            .leftJoinAndSelect('user.vaccination', 'vaccination')
+            .getMany();
     }
 
     @Post('edit_vaccinations')
     async editVaccinations(@Body() vaccines: any) {
-        const userId = '103c62f7-e330-44f9-844c-5f7447e8a024';
+        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
         const trueVaccines = [];
         const list = await this.vaccinationRepository.find({where: {id: In(Object.keys(vaccines))}});
         for (const value of list) {
@@ -39,14 +52,23 @@ export class VaccinationsController {
         await this.userRepository.save(user);
     }
 
-    /*async create(vaccination: Vaccination) {
-        const newVaccination = this.vaccinationRepository.create({
-            name: vaccination.name
-        });
-        try {
-            await this.vaccinationRepository.save(newVaccination);
-        } catch (e) {
-            console.log(e);
-        }
-    }*/
+    @Get('extra_vaccinations')
+    findAllExtraVaccines() {
+        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
+        return this.userRepository.find({where: {id: userId}, relations: ['extraVaccination']});
+    }
+
+    @Post('add_extra_vaccinations')
+    async addExtraVaccinations(@Body() vaccine: any) {
+        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
+        const user = new User();
+        user.id = userId;
+        const extra = this.extraVaccinationRepository.create();
+        extra.name = vaccine.name;
+        extra.date = new Date();
+        extra.date.setFullYear(vaccine.date.year, vaccine.date.month-1, vaccine.date.day);
+        extra.description = vaccine.description;
+        extra.user = user;
+        await this.extraVaccinationRepository.save(extra);
+    }
 }

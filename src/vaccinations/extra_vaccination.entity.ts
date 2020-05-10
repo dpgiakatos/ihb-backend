@@ -10,11 +10,11 @@ export class ExtraVaccination {
     name: string;
 
     @Column()
-    date: string;
+    date: Date;
 
     @Column()
     description: string;
 
     @ManyToOne(type => User, user => user.extraVaccination)
-    user: User[];
+    user: User;
 }
