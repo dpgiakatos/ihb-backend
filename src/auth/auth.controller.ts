@@ -23,14 +23,11 @@ export class AuthController {
     async register(@Body() userData: RegisterBindingModel): Promise<void> {
         const user = await this.usersService.create(userData.email, userData.password);
         await this.authService.setUserRole(user, Role.User);
-
-        const a = [];
-        a.push(1);
     }
 
     @Get('profile')
     @Auth
-    @Roles(Role.Administrator)
+    // @Roles(Role.Administrator)
     getProfile(@User() claims: Claims) {
         return claims;
     }
