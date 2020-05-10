@@ -69,6 +69,7 @@ export class VaccinationsController {
         extra.date.setFullYear(vaccine.date.year, vaccine.date.month-1, vaccine.date.day);
         extra.description = vaccine.description;
         extra.user = user;
+        console.log(vaccine);
         await this.extraVaccinationRepository.save(extra);
     }
 }
