@@ -24,7 +24,7 @@ async function bootstrap() {
         mappedErrors[error.property] = constraints;
         
       });
-      throw new UnprocessableEntityException({ failingConstraints: mappedErrors });
+      throw new UnprocessableEntityException(mappedErrors);
     }
   }));
 

@@ -1,6 +1,5 @@
 import { UnprocessableEntityException as NativeException } from '@nestjs/common';
 
-
 export interface UnprocessableEntitySchema { 
     failingConstraints: {
         [key: string]: {
@@ -10,9 +9,8 @@ export interface UnprocessableEntitySchema {
     };
 }
 
-
 export class UnprocessableEntityException extends NativeException {
-    constructor(schema: UnprocessableEntitySchema) {
-        super(schema);
+    constructor(schema: UnprocessableEntitySchema['failingConstraints']) {
+        super({ failingConstraints: schema });
     }
 }

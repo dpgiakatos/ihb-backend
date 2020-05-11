@@ -1,8 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
+import { UnprocessableEntityException } from '../helpers/UnprocessableEntityException';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,7 @@ export class UsersService {
         const existingUser = await this.findOne(email);
 
         if(existingUser) {
-            throw new BadRequestException('Email already exists');
+            throw new UnprocessableEntityException({ email: [{ constraint: 'isExistingEmail' }] });
         }
         
         const newUser = this.usersRepository.create({
