@@ -6,7 +6,7 @@ import { User } from '../users/user.entity';
 import { ExtraVaccination } from './extra_vaccination.entity';
 import { Claims } from '../auth/models/claims.interface';
 import { User as UserDec } from '../auth/decorators/user.decorator'
-import { AddExtraVaccinations } from './models/vaccinations.bindings';
+import { AddExtraVaccinationsBindingModel } from './models/vaccinations.bindings';
 import { Auth } from '../auth/decorators/auth.decorator';
 
 @Auth
@@ -55,7 +55,8 @@ export class VaccinationsController {
     }
 
     @Post('add_extra_vaccinations')
-    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinations, @UserDec() claims: Claims) {
+    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinationsBindingModel, @UserDec() claims: Claims) {
+        console.log(vaccine);
         const user = this.userRepository.create();
         user.id = claims.id;
         const extra = this.extraVaccinationRepository.create();

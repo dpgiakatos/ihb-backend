@@ -1,4 +1,4 @@
-export class AddExtraVaccinations {
+export class AddExtraVaccinationsBindingModel {
     name: string;
 
     date: VaccinationDate;
