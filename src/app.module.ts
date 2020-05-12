@@ -4,13 +4,15 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { PersonalModule } from './personal/personal.module';
 import { isUnique } from './helpers/unique.decorator';
 
 @Module({
   imports: [
     AuthModule,
     TypeOrmModule.forRoot(),
-    UsersModule
+    UsersModule,
+    PersonalModule
   ],
   controllers: [AppController],
   providers: [
