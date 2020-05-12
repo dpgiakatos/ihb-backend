@@ -1,5 +1,5 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {User} from "../users/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Entity()
 export class ExtraVaccination {
@@ -15,6 +15,6 @@ export class ExtraVaccination {
     @Column()
     description: string;
 
-    @ManyToOne(type => User, user => user.extraVaccination)
+    @ManyToOne(() => User, user => user.extraVaccination)
     user: User;
 }

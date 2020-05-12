@@ -1,17 +1,19 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { VaccinationsService } from './vaccinations.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vaccination } from './vaccination.entity';
 import { In, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { ExtraVaccination } from './extra_vaccination.entity';
-import { writeHeapSnapshot } from 'v8';
+import { Claims } from '../auth/models/claims.interface';
+import { User as UserDec } from '../auth/decorators/user.decorator'
+import { AddExtraVaccinations } from './models/vaccinations.bindings';
+import { Auth } from '../auth/decorators/auth.decorator';
 
+@Auth
 @Controller('dashboard')
 export class VaccinationsController {
 
     constructor(
-        private vaccinationsService: VaccinationsService,
         @InjectRepository(Vaccination)
         private vaccinationRepository: Repository<Vaccination>,
         @InjectRepository(User)
@@ -26,43 +28,36 @@ export class VaccinationsController {
     }
 
     @Get('user_vaccines')
-    getUserVaccines() {
-        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
-        // return this.userRepository.find( {select: ['vaccination'], where: {id: userId}, relations: ['vaccination']});
-        return this.userRepository.createQueryBuilder('user')
-            .select('userId')
-            .where('user.id', {userId})
-            .leftJoinAndSelect('user.vaccination', 'vaccination')
-            .getMany();
+    async getUserVaccines(@UserDec() claims: Claims) {
+        const req = await this.userRepository.findOne( { where: { id: claims.id }, relations: ['vaccination'] });
+        return req.vaccination;
     }
 
     @Post('edit_vaccinations')
-    async editVaccinations(@Body() vaccines: any) {
-        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
+    async editVaccinations(@Body() vaccines: { [key: string]: boolean }, @UserDec() claims: Claims) {
         const trueVaccines = [];
-        const list = await this.vaccinationRepository.find({where: {id: In(Object.keys(vaccines))}});
+        const list = await this.vaccinationRepository.find({ where: { id: In(Object.keys(vaccines)) } });
         for (const value of list) {
             if (vaccines[value.id]) {
-                trueVaccines.push(this.vaccinationRepository.create({id: value.id}));
+                trueVaccines.push(this.vaccinationRepository.create({ id: value.id }));
             }
         }
-        const user = new User();
-        user.id = userId;
+        const user = this.userRepository.create();
+        user.id = claims.id;
         user.vaccination = trueVaccines;
         await this.userRepository.save(user);
     }
 
     @Get('extra_vaccinations')
-    findAllExtraVaccines() {
-        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
-        return this.userRepository.find({where: {id: userId}, relations: ['extraVaccination']});
+    async findAllExtraVaccines(@UserDec() claims: Claims) {
+        const req = await this.userRepository.findOne({ where: { id: claims.id }, relations: ['extraVaccination'] });
+        return req.extraVaccination;
     }
 
     @Post('add_extra_vaccinations')
-    async addExtraVaccinations(@Body() vaccine: any) {
-        const userId = '8ec0e29d-34d6-412c-a062-1a691fbbe4e5';
-        const user = new User();
-        user.id = userId;
+    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinations, @UserDec() claims: Claims) {
+        const user = this.userRepository.create();
+        user.id = claims.id;
         const extra = this.extraVaccinationRepository.create();
         extra.name = vaccine.name;
         extra.date = new Date();
