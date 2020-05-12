@@ -16,7 +16,7 @@ export class Personal {
     lastName: string;
 
     @Column()
-    ssnvs: number;
+    ssnvs: string;
 
     @Column()
     birthDate: Date;
@@ -40,10 +40,10 @@ export class Personal {
     email: string;
 
     @Column()
-    mobilePhone: number;
+    mobilePhone: string;
 
     @Column()
-    emergencyContact: number;
+    emergencyContact: string;
 
     @OneToOne(type => User)
     @JoinColumn()
