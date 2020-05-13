@@ -6,6 +6,7 @@
   "password": "secure",
   "database": "ihb",
   "entities": ["dist/**/*.entity{.ts,.js}"],
+  "subscribers": ["dist/**/*.typeorm-subscriber{.ts,.js}"],
   "synchronize": true,
   "logging": true,
   "cli": {

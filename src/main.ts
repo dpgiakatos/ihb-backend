@@ -1,32 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, ValidationError } from '@nestjs/common';
-import { UnprocessableEntityException, UnprocessableEntitySchema } from './helpers/UnprocessableEntityException';
+import { UnprocessableEntityException } from './helpers/unprocessable-entity-exception.interface';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     exceptionFactory: (errors: ValidationError[]) => {
-
-      const mappedErrors: UnprocessableEntitySchema['failingConstraints'] = {};
-      
-      errors.forEach(error => {
-
-        const constraints: UnprocessableEntitySchema['failingConstraints']['any'] = [];
-        Object.keys(error.constraints).forEach(constraint => {
-          constraints.push({
-            constraint,
-            message: error.constraints[constraint]
-          });
-        });
-
-        mappedErrors[error.property] = constraints;
-        
-      });
-      throw new UnprocessableEntityException(mappedErrors);
+      throw UnprocessableEntityException.fromValidationErrorArray(errors);
     }
   }));
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.listen(3000);
 }

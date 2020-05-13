@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
-import { UnprocessableEntityException } from '../helpers/UnprocessableEntityException';
 
 @Injectable()
 export class UsersService {
@@ -17,13 +16,6 @@ export class UsersService {
     }
 
     async create(email: string, password: string): Promise<User> {
-        
-        const existingUser = await this.findOne(email);
-
-        if(existingUser) {
-            throw new UnprocessableEntityException({ email: [{ constraint: 'isExistingEmail' }] });
-        }
-        
         const newUser = this.usersRepository.create({
             email,
             password: await hash(password, 10)

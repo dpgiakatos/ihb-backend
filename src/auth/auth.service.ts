@@ -36,9 +36,10 @@ export class AuthService {
     }
 
     private async verifyCredentials(user: User, password: string) {
-        if (!user || !(await compare(password, user.password))) {
-            throw new UnauthorizedException('Invalid credentials');
+        if (user && await compare(password, user.password)) {
+            return;
         }
+        throw new UnauthorizedException('Invalid credentials');
     }
 
     private generateJWT(claims: Claims) {
