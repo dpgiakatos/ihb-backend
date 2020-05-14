@@ -1,14 +1,15 @@
-import {Controller, Post, Body, Delete, Get, Param, Put, Query, Patch} from '@nestjs/common';
-import {PersonalService} from "./personal.service";
-import {InjectRepository} from '@nestjs/typeorm';
-import {Personal} from './personal.entity';
-import {Repository} from 'typeorm';
+import { Controller, Post, Body, Delete, Get, Put } from '@nestjs/common';
+import { PersonalService } from './personal.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Personal } from './personal.entity';
+import { Repository } from 'typeorm';
 import { User } from 'src/auth/decorators/user.decorator';
 import { Claims } from 'src/auth/models/claims.interface';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { CreatePersonalBindings, UpdatePersonalBindings } from './personal.bindings';
 
 @Auth
-@Controller('dashboard')
+@Controller('dashboard/personal')
 export class PersonalController {
   constructor(
     private personalService: PersonalService,
@@ -16,28 +17,23 @@ export class PersonalController {
     private personalRepository: Repository<Personal>
   ) {}
 
-  @Get('personal')
-  async getPersonal(@User() user: Claims): Promise<any> {
-    return await this.personalRepository.findOne({
-      where: {
-        user: user.id
-      }
-    });  
+  @Get()
+  async getPersonal(@User() user: Claims): Promise<Personal> {
+    return await this.personalService.findByUser(user.id);
   }
 
-  @Post('personal')
-  async postPersonal(@Body() newPersonal: any, @User() user: Claims){
-    console.log("Hello\n\n\n")
-    await this.personalService.create(newPersonal, user);
+  @Post()
+  async postPersonal(@Body() newPersonal: CreatePersonalBindings, @User() user: Claims): Promise<void> {
+    await this.personalService.create(newPersonal, user.id);
   }
 
-  @Delete('personal')
-  async remove(@User() user: Claims) {
-    await this.personalRepository.delete({user: user.id});
+  @Delete()
+  async remove(@User() user: Claims): Promise<void> {
+    await this.personalRepository.delete({ user: user.id });
   }
 
-  @Put('personal')
-  async putPersonal(@Body() newPersonal: any, @User() user: Claims){
+  @Put()
+  async putPersonal(@Body() newPersonal: UpdatePersonalBindings, @User() user: Claims): Promise<void> {
     await this.personalService.update(newPersonal, user);
   }
 }

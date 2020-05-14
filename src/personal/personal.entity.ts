@@ -1,12 +1,13 @@
-import { Entity, Unique, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
-import {User} from "../users/user.entity";
+import { Entity, Unique, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { User } from '../users/user.entity';
+import { IsUnique } from 'src/helpers/unique.decorator';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-@Unique(["email"])
-@Unique(["ssnvs"])
-@Unique(["mobilePhone"])
+@Unique(['ssnvs'])
 export class Personal {
-    @PrimaryGeneratedColumn("uuid")
+    @Exclude()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -15,37 +16,36 @@ export class Personal {
     @Column()
     lastName: string;
 
-    @Column()
+    @IsUnique<Personal>(o => o.id)
+    @Column({ nullable: true })
     ssnvs: string;
 
-    @Column()
+    @Column({ nullable: true })
     birthDate: Date;
 
-    @Column()
+    @Column({ nullable: true })
     country: string;
 
-    @Column()
+    @Column({ nullable: true })
     fatherFirstName: string;
 
-    @Column()
+    @Column({ nullable: true })
     fatherLastName: string;
 
-    @Column()
+    @Column({ nullable: true })
     motherFirstName: string;
 
-    @Column()
+    @Column({ nullable: true })
     motherLastName: string;
 
-    @Column()
-    email: string;
-
-    @Column()
+    @Column({ nullable: true })
     mobilePhone: string;
 
-    @Column()
+    @Column({ nullable: true })
     emergencyContact: string;
 
-    @OneToOne(type => User)
+    @IsUnique<Personal>(o => o.id, { message: 'Personal information already exists. Please use Put method to edit' })
+    @OneToOne(() => User)
     @JoinColumn()
-    user: string
+    user: string;
 }

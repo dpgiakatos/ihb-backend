@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import {InjectRepository} from "@nestjs/typeorm";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Personal } from './personal.entity';
-import {Repository} from "typeorm";
+import { Repository } from 'typeorm';
 import { Claims } from 'src/auth/models/claims.interface';
-import { stringify } from 'querystring';
+import { CreatePersonalBindings } from './personal.bindings';
 
 @Injectable()
 export class PersonalService {
@@ -12,66 +12,31 @@ export class PersonalService {
         private personalRepository: Repository<Personal>
     ) {}
 
-    
-    /*
-    findOne(id: number): Promise<Personal> {
-        return this.personalRepository.findOne({id: id});
-    }
-    */
-
-    
-    async create(personal: any, user: Claims) {
-        const newPersonal = this.personalRepository.create();   
-        newPersonal.firstName = personal.firstName;
-        newPersonal.lastName = personal.lastName;
-        newPersonal.ssnvs = personal.ssnvs;
-        newPersonal.birthDate = new Date();
-        newPersonal.birthDate.setFullYear(personal.birthDate.year, personal.birthDate.month-1, personal.birthDate.day);
-        newPersonal.country = personal.country;
-        newPersonal.fatherFirstName = personal.fatherFirstName;
-        newPersonal.fatherLastName = personal.fatherLastName;
-        newPersonal.motherFirstName = personal.motherFirstName;
-        newPersonal.motherLastName = personal.motherLastName;
-        newPersonal.email = personal.email;
-        newPersonal.mobilePhone = personal.mobilePhone;
-        newPersonal.emergencyContact = personal.emergencyContact;
-        newPersonal.user = user.id
-        try {
-            await this.personalRepository.save(newPersonal);
-        } catch (e) {
-            console.log(e);
-        }
+    findByUser(userId: string): Promise<Personal> {
+        return this.personalRepository.findOne({ user: userId });
     }
 
-    async update(personal: any, user: Claims) {
-        const existing = await this.personalRepository.findOne({
-            where: {
-                user: user.id
-            }
-        })
+    async create(personal: CreatePersonalBindings, userId: string) {
+        const newPersonal = this.personalRepository.create(personal);   
+        // newPersonal.birthDate.setFullYear(personal.birthDate.year, personal.birthDate.month-1, personal.birthDate.day);
+        newPersonal.user = userId;
+        await this.personalRepository.save(newPersonal);
+        
+    }
 
-        existing.firstName = personal.firstName;
-        existing.lastName = personal.lastName;
-        existing.ssnvs = personal.ssnvs;
-        existing.birthDate = new Date();
-        existing.birthDate.setFullYear(personal.birthDate.year, personal.birthDate.month-1, personal.birthDate.day);
-        existing.country = personal.country;
-        existing.fatherFirstName = personal.fatherFirstName;
-        existing.fatherLastName = personal.fatherLastName;
-        existing.motherFirstName = personal.motherFirstName;
-        existing.motherLastName = personal.motherLastName;
-        existing.email = personal.email;
-        existing.mobilePhone = personal.mobilePhone;
-        existing.emergencyContact = personal.emergencyContact;
+    async update(personal: CreatePersonalBindings, user: Claims) {
+        const existing = await this.findByUser(user.id);
 
-        try {
-            await this.personalRepository.save(existing);
-        } catch (e) {
-            console.log(e);
+        Object.assign(existing, personal);
+
+        if (!existing) {
+            throw new NotFoundException();
         }
+
+        await this.personalRepository.save(existing);
     }
 
     async remove(id: number): Promise<void> {
         await this.personalRepository.delete(id);
-      }
+    }
 }

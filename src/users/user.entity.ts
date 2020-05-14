@@ -8,7 +8,7 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @IsUnique()
+    @IsUnique<User>(o => o.id)
     @Column()
     email: string;
 
