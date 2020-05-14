@@ -5,6 +5,9 @@ import { Exclude } from 'class-transformer';
 import { ExtraVaccination } from './extra-vaccinations/extra-vaccination.entity';
 import { Vaccine } from './vaccinations/vaccine.entity';
 import { Allergic } from  '../allergic/allergic.entity';
+import { IsUnique } from 'src/helpers/unique.decorator';
+import { Hospital } from 'src/hospital/hospital.entity';
+import { HospitalModule } from 'src/hospital/hospital.module';
 
 @Entity()
 @Unique(['email'])
@@ -32,4 +35,7 @@ export class User {
     
     @OneToMany(() => Allergic, allergic => allergic.user)
     allergic: Allergic[];
+
+    // @OneToMany(() => Hospital, hospital => hospital.user)
+    hospital: Hospital[];
 }

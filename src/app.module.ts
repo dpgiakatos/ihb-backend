@@ -14,6 +14,8 @@ import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber'
 import { useContainer } from 'class-validator';
 import { DoctorModule } from './doctor/doctor.module';
 import { AllergicModule } from './allergic/allergic.module';
+import { Hospital } from './hospital/hospital.entity';
+import { HospitalModule } from './hospital/hospital.module';
 
 @Module({
   imports: [
@@ -46,6 +48,9 @@ import { AllergicModule } from './allergic/allergic.module';
     }),
     DoctorModule,
     AllergicModule,
+    TypeOrmModule.forRoot(),
+    UsersModule,
+    HospitalModule
   ],
   controllers: [AppController],
   providers: [
