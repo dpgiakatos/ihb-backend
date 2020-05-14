@@ -1,6 +1,6 @@
 export interface Claims {
     id: string;
-    roles: Role[]
+    roles: Role[];
 }
 
 export enum Role {

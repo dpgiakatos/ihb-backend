@@ -6,10 +6,11 @@ import { LoginBindingModel, RegisterBindingModel } from './models/auth.bindings'
 import { Claims, Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
+import { PersonalService } from 'src/personal/personal.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private usersService: UsersService, private authService: AuthService) {}
+    constructor(private usersService: UsersService, private authService: AuthService, private personalService: PersonalService) {}
 
     @Post('login')
     async login(@Body() credentials: LoginBindingModel): Promise<LoginViewModel> {
@@ -22,6 +23,7 @@ export class AuthController {
     async register(@Body() userData: RegisterBindingModel): Promise<void> {
         const user = await this.usersService.create(userData.email, userData.password);
         await this.authService.setUserRole(user, Role.User);
+        await this.personalService.create({ firstName: userData.firstName, lastName: userData.lastName }, user.id);
     }
 
     @Get('profile')
