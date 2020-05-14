@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsDate } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsString, IsOptional } from 'class-validator';
+import { IsDateOnlyString } from 'src/helpers/date.decorator';
 
 
 export class CreatePersonalBindings {
@@ -11,86 +11,84 @@ export class CreatePersonalBindings {
 
     @IsString()
     @IsOptional()
-    ssnvs: string;
+    ssnvs?: string;
 
-    @Type(() => Date)
-    @IsDate()
+    @IsDateOnlyString()
     @IsOptional()
-    birthDate: Date;
+    birthDate?: string;
     
     @IsString()
     @IsOptional()
-    country: string;
+    country?: string;
 
     @IsString()
     @IsOptional()
-    fatherFirstName: string;
+    fatherFirstName?: string;
 
     @IsString()
     @IsOptional()
-    fatherLastName: string;
+    fatherLastName?: string;
 
     @IsString()
     @IsOptional()
-    motherFirstName: string;
+    motherFirstName?: string;
 
     @IsString()
     @IsOptional()
-    motherLastName: string;
+    motherLastName?: string;
 
     @IsString()
     @IsOptional()
-    mobilePhone: string;
+    mobilePhone?: string;
 
     @IsString()
     @IsOptional()
-    emergencyContact: string;
+    emergencyContact?: string;
 }
 
 export class UpdatePersonalBindings {
     @IsString()
     @IsOptional()
-    firstName: string;
+    firstName?: string;
 
     @IsString()
     @IsOptional()
-    lastName: string;
+    lastName?: string;
 
     @IsString()
     @IsOptional()
-    ssnvs: string;
+    ssnvs?: string;
 
-    @Transform(value => new Date(value))
-    @IsDate()
+    @IsDateOnlyString()
     @IsOptional()
-    birthDate: Date;
+    birthDate?: string;
     
     @IsString()
     @IsOptional()
-    country: string;
+    country?: string;
 
     @IsString()
     @IsOptional()
-    fatherFirstName: string;
+    fatherFirstName?: string;
 
     @IsString()
     @IsOptional()
-    fatherLastName: string;
+    fatherLastName?: string;
 
     @IsString()
     @IsOptional()
-    motherFirstName: string;
+    motherFirstName?: string;
 
     @IsString()
     @IsOptional()
-    motherLastName: string;
+    motherLastName?: string;
 
     @IsString()
     @IsOptional()
-    mobilePhone: string;
+    mobilePhone?: string;
 
     @IsString()
     @IsOptional()
-    emergencyContact: string;
+    emergencyContact?: string;
 }
 

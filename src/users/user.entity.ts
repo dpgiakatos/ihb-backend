@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique, OneToMany } from 'typeorm';
 import { Role } from '../auth/models/role.entity';
 import { IsUnique } from 'src/helpers/unique.decorator';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 @Unique(['email'])
@@ -12,6 +13,7 @@ export class User {
     @Column()
     email: string;
 
+    @Exclude()
     @Column()
     password: string;
 

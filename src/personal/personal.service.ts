@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Personal } from './personal.entity';
-import { Repository } from 'typeorm';
-import { Claims } from 'src/auth/models/claims.interface';
+import { Repository, DeepPartial } from 'typeorm';
 import { CreatePersonalBindings } from './personal.bindings';
 
 @Injectable()
@@ -17,26 +16,16 @@ export class PersonalService {
     }
 
     async create(personal: CreatePersonalBindings, userId: string) {
-        const newPersonal = this.personalRepository.create(personal);   
-        // newPersonal.birthDate.setFullYear(personal.birthDate.year, personal.birthDate.month-1, personal.birthDate.day);
+        const newPersonal = this.personalRepository.create(personal);
         newPersonal.user = userId;
         await this.personalRepository.save(newPersonal);
-        
     }
 
-    async update(personal: CreatePersonalBindings, user: Claims) {
-        const existing = await this.findByUser(user.id);
+    async update(personal: DeepPartial<Personal>, userId: string) {
+        const existing = await this.findByUser(userId);
 
         Object.assign(existing, personal);
 
-        if (!existing) {
-            throw new NotFoundException();
-        }
-
         await this.personalRepository.save(existing);
-    }
-
-    async remove(id: number): Promise<void> {
-        await this.personalRepository.delete(id);
     }
 }

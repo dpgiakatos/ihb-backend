@@ -20,8 +20,8 @@ export class Personal {
     @Column({ nullable: true })
     ssnvs: string;
 
-    @Column({ nullable: true })
-    birthDate: Date;
+    @Column({ nullable: true, type: 'date' })
+    birthDate: string;
 
     @Column({ nullable: true })
     country: string;
@@ -44,6 +44,7 @@ export class Personal {
     @Column({ nullable: true })
     emergencyContact: string;
 
+    @Exclude()
     @IsUnique<Personal>(o => o.id, { message: 'Personal information already exists. Please use Put method to edit' })
     @OneToOne(() => User)
     @JoinColumn()
