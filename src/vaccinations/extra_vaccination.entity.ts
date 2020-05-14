@@ -9,7 +9,7 @@ export class ExtraVaccination {
     @Column()
     name: string;
 
-    @Column()
+    @Column({ type: 'date' })
     date: Date;
 
     @Column()
