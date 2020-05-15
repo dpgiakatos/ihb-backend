@@ -63,7 +63,7 @@ export class VaccinationsService {
     }
 
     async editExtraVaccinations(id: number, vaccine: AddExtraVaccinationsBindingModel, claims: Claims) {
-        const req = await this.extraVaccinationRepository.findOne({ where: { id: id } })
+        const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] });
         if (req.user.id !== claims.id) {
             throw new UnprocessableEntityException({
                 failingConstraints: {
@@ -80,7 +80,7 @@ export class VaccinationsService {
     }
 
     async deleteExtraVaccinations(id: number, claims: Claims) {
-        const req = await this.extraVaccinationRepository.findOne({ where: { id: id } })
+        const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] })
         if (req.user.id !== claims.id) {
             throw new UnprocessableEntityException({
                 failingConstraints: {
