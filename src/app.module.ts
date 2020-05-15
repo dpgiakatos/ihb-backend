@@ -1,4 +1,4 @@
-import { Module, ClassSerializerInterceptor } from '@nestjs/common';
+import { Module, ClassSerializerInterceptor, HttpModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { PersonalModule } from './personal/personal.module';
 import { isUnique } from './helpers/unique.decorator';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import {VaccinationsModule} from "./vaccinations/vaccinations.module";
 
 @Module({
   imports: [
@@ -14,6 +15,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     TypeOrmModule.forRoot(),
     UsersModule,
     PersonalModule
+    HttpModule,
+    VaccinationsModule
   ],
   controllers: [AppController],
   providers: [
