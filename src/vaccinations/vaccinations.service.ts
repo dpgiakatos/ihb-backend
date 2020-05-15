@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vaccination } from './vaccination.entity';
 import { In, Repository } from 'typeorm';
@@ -6,7 +6,7 @@ import { User } from '../users/user.entity';
 import { ExtraVaccination } from './extra_vaccination.entity';
 import { Claims } from '../auth/models/claims.interface';
 import { AddExtraVaccinationsBindingModel } from './models/vaccinations.bindings';
-import { UnprocessableEntityException } from '../helpers/UnprocessableEntityException';
+import { UnprocessableEntityException } from '../helpers/unprocessable-entity-exception.interface';
 
 @Injectable()
 export class VaccinationsService {
@@ -65,13 +65,7 @@ export class VaccinationsService {
     async editExtraVaccinations(id: number, vaccine: AddExtraVaccinationsBindingModel, claims: Claims) {
         const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] });
         if (req.user.id !== claims.id) {
-            throw new UnprocessableEntityException({
-                failingConstraints: {
-                    all: [{
-                        constraint: 'idDoNotMatch'
-                    }]
-                }
-            });
+            throw new UnauthorizedException();
         } else {
             const extra = this.extraVaccinations(vaccine, claims);
             extra.id = id;
@@ -82,13 +76,7 @@ export class VaccinationsService {
     async deleteExtraVaccinations(id: number, claims: Claims) {
         const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] })
         if (req.user.id !== claims.id) {
-            throw new UnprocessableEntityException({
-                failingConstraints: {
-                    all: [{
-                        constraint: 'idDoNotMatch'
-                    }]
-                }
-            });
+            throw new UnauthorizedException();
         } else {
             const user = this.userRepository.create();
             user.id = claims.id;
