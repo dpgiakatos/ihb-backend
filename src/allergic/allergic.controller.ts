@@ -16,16 +16,15 @@ export class AllergicController {
     private allergicRepository: Repository<Allergic>
   ) {}
 
-  @Get()
-  //change any to Allergic
-  async getAllergic(@User() user: Claims): Promise<Allergic[]> {
-    return await this.allergicService.findAllAllergic(user.id);
+  @Get(':page')
+  async getAllergic(@Param('page', ParseIntPipe) page: number,@User() user: Claims): Promise<Allergic[]> {
+    return await this.allergicService.findAllAllergic(page, user);
   }
 
-  @Get('count_allergic')
+  @Get('count_allergic/count')
     async countExtraVaccinations(@User() user: Claims) {
         return await this.allergicService.countAllergic(user.id);
-    }
+  }
 
   @Post()
   async postAllergic(@Body() allergic: Allergic, @User() user: Claims): Promise<any> {

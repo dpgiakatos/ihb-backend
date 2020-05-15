@@ -3,9 +3,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import { Allergic } from './allergic.entity';
 import {Repository} from "typeorm";
 import { Claims } from 'src/auth/models/claims.interface';
-import { stringify } from 'querystring';
 import { User } from 'src/users/user.entity';
-import { AllergicModule } from './allergic.module';
 
 @Injectable()
 export class AllergicService {
@@ -16,8 +14,13 @@ export class AllergicService {
         private userRepository: Repository<User>
     ) {}
     
-    async findAllAllergic(userId: string): Promise<any> {
-        return await this.allergicRepository.find({user: userId});
+    async findAllAllergic(page: number, user: Claims): Promise<any> {
+        return await this.allergicRepository.find({
+            where: { user: this.userRepository.create({ id: user.id }) },
+            skip: (page * 10) - 10,
+            take: 10,
+            order: { id: 'ASC' }
+        });
     }
 
     async countAllergic(userId: string) {
@@ -28,39 +31,11 @@ export class AllergicService {
 
     async create(allergic: Allergic, user: Claims) {
         return await this.allergicRepository.save(this.allergic(allergic, user));
-        // const newAllergic = this.allergicRepository.create();   
-        // newAllergic.name = allergic.name;
-        // newAllergic.dDescription = allergic.dDescription;
-        // newAllergic.tDescription = allergic.tDescription;
-        // newAllergic.user = user.id
-        // try {
-        //     return await this.allergicRepository.save(newAllergic);
-        // } catch (e) {
-        //     console.log(e);
-        // }
     }
-
-    async update(allergic: any, user: Claims) {
-    
-    }
-
 
 
     async editAllergic(id: number, allergic: Allergic, claims: Claims) {
         const req = await this.allergicRepository.findOne({ where: { id: id }, relations: ['user'] });
-        // if (req.user.id !== claims.id) {
-        //     throw new UnprocessableEntityException({
-        //         failingConstraints: {
-        //             all: [{
-        //                 constraint: 'idDoNotMatch'
-        //             }]
-        //         }
-        //     });
-        // } else {
-        //     const extra = this.extraVaccinations(vaccine, claims);
-        //     extra.id = id;
-        //     return await this.extraVaccinationRepository.save(extra);
-        // }
         const extra = this.allergic(allergic, claims);
         extra.id = id;
         return await this.allergicRepository.save(extra);
@@ -82,26 +57,10 @@ export class AllergicService {
 
     async deleteAllergic(id: number, claims: Claims) {
         const req = await this.allergicRepository.findOne({ where: { id: id }, relations: ['user'] })
-        // if (req.user !== claims.id) {
-        //     throw new UnprocessableEntityException({
-        //         failingConstraints: {
-        //             all: [{
-        //                 constraint: 'idDoNotMatch'
-        //             }]
-        //         }
-        //     });
-        // } else {
-        //     const user = this.userRepository.create();
-        //     user.id = claims.id;
-        //     const extra = this.allergicRepository.create();
-        //     extra.id = id;
-        //     await this.allergicRepository.delete(extra);
-        // }
             const user = this.userRepository.create();
             user.id = claims.id;
             const extra = this.allergicRepository.create();
             extra.id = id;
-            await this.allergicRepository.delete(extra);
-        
+            await this.allergicRepository.delete(extra);   
     }
 }
