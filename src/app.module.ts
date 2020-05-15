@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
+import {HttpModule, Module} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { isUnique } from './helpers/unique.decorator';
+import {VaccinationsModule} from "./vaccinations/vaccinations.module";
 import { AllergicModule } from './allergic/allergic.module';
 
 @Module({
@@ -12,15 +12,11 @@ import { AllergicModule } from './allergic/allergic.module';
     AuthModule,
     TypeOrmModule.forRoot(),
     UsersModule,
-    AllergicModule
+    HttpModule,
+    AllergicModule,
+    VaccinationsModule
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    isUnique
-  ],
-  exports: [
-    UsersModule
-  ]
+  providers: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Get, Put } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Get, Put, Param, ParseIntPipe } from '@nestjs/common';
 import { AllergicService } from './allergic.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Allergic } from './allergic.entity';
@@ -28,17 +28,22 @@ export class AllergicController {
     }
 
   @Post()
-  async postAllergic(@Body() newAllergic: any, @User() user: Claims): Promise<void> {
-    await this.allergicService.create(newAllergic, user);
+  async postAllergic(@Body() allergic: Allergic, @User() user: Claims): Promise<any> {
+    return await this.allergicService.create(allergic, user);
   }
 
-  @Delete()
-  async remove(@User() user: Claims): Promise<void> {
-    // await this.allergicRepository.delete({ user: user.id });
-  }
 
-  @Put()
-  async putAllergic(@Body() newAllergic: any, @User() user: Claims): Promise<void> {
-    // await this.allergicService.update(newAllergic, user);
-  }
+  @Delete(':id')
+    async deleteAllergic(@Param('id', ParseIntPipe) id: number, @User() claims: Claims) {
+        await this.allergicService.deleteAllergic(id, claims);
+    }
+
+    @Put(':id')
+    async editAllergic(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() allergic: Allergic,
+        @User() claims: Claims
+    ) {
+        return await this.allergicService.editAllergic(id, allergic, claims);
+    }
 }

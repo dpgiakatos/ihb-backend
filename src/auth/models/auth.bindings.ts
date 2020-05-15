@@ -1,10 +1,10 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsNotEmpty, IsEmail } from 'class-validator';
 
 export class LoginBindingModel {
-    @IsString()
+    @IsNotEmpty()
     email: string;
 
-    @IsString()
+    @IsNotEmpty()
     password: string;
 }
 
@@ -12,12 +12,6 @@ export class RegisterBindingModel {
     @IsEmail()
     email: string;
 
-    @IsString()
+    @IsNotEmpty()
     password: string;
-
-    @IsString()
-    firstName: string;
-
-    @IsString()
-    lastName: string;
 }
