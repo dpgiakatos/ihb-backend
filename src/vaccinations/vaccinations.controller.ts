@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
-import { Claims } from '../auth/models/claims.interface';
-import { User as UserDec } from '../auth/decorators/user.decorator'
+import { Claims, Role } from '../auth/models/claims.interface';
+import { User } from '../auth/decorators/user.decorator'
 import { AddExtraVaccinationsBindingModel } from './models/vaccinations.bindings';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { VaccinationsService } from './vaccinations.service';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Auth
 @Controller('dashboard')
@@ -19,30 +20,37 @@ export class VaccinationsController {
     }
 
     @Get('user_vaccines')
-    async getUserVaccines(@UserDec() claims: Claims) {
-        return await this.vaccinationsService.getUserVaccines(claims);
+    async getUserVaccines(@User() claims: Claims) {
+        return await this.vaccinationsService.getUserVaccines(claims.id);
+    }
+
+    @Get('user_vaccines/:id')
+    @Roles(Role.Doctor)
+    async getUserVaccinesId(@Param('id') id: string) {
+        return await this.vaccinationsService.getUserVaccines(id);
     }
 
     @Post('edit_vaccinations')
-    async editVaccinations(@Body() vaccines: { [key: string]: boolean }, @UserDec() claims: Claims) {
+    @Roles(Role.Doctor)
+    async editVaccinations(@Body() vaccines: { [key: string]: boolean }, @User() claims: Claims) {
         await this.vaccinationsService.editVaccinations(vaccines, claims);
     }
 
     @Get('extra_vaccinations/:page')
     async findExtraVaccinations(
         @Param('page', ParseIntPipe) page: number,
-        @UserDec() claims: Claims
+        @User() claims: Claims
     ) {
         return await this.vaccinationsService.findExtraVaccinations(page, claims);
     }
 
     @Get('count_extra_vaccinations')
-    async countExtraVaccinations(@UserDec() claims: Claims) {
+    async countExtraVaccinations(@User() claims: Claims) {
         return await this.vaccinationsService.countExtraVaccinations(claims);
     }
 
     @Post('add_extra_vaccinations')
-    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinationsBindingModel, @UserDec() claims: Claims) {
+    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinationsBindingModel, @User() claims: Claims) {
         return await this.vaccinationsService.addExtraVaccinations(vaccine, claims);
     }
 
@@ -50,13 +58,13 @@ export class VaccinationsController {
     async editExtraVaccinations(
         @Param('id', ParseIntPipe) id: number,
         @Body() vaccine: AddExtraVaccinationsBindingModel,
-        @UserDec() claims: Claims
+        @User() claims: Claims
     ) {
         return await this.vaccinationsService.editExtraVaccinations(id, vaccine, claims);
     }
 
     @Delete('delete_extra_vaccinations/:id')
-    async deleteExtraVaccinations(@Param('id', ParseIntPipe) id: number, @UserDec() claims: Claims) {
+    async deleteExtraVaccinations(@Param('id', ParseIntPipe) id: number, @User() claims: Claims) {
         await this.vaccinationsService.deleteExtraVaccinations(id, claims);
     }
 }

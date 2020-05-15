@@ -6,7 +6,6 @@ import { User } from '../users/user.entity';
 import { ExtraVaccination } from './extra_vaccination.entity';
 import { Claims } from '../auth/models/claims.interface';
 import { AddExtraVaccinationsBindingModel } from './models/vaccinations.bindings';
-import { UnprocessableEntityException } from '../helpers/unprocessable-entity-exception.interface';
 
 @Injectable()
 export class VaccinationsService {
@@ -24,8 +23,8 @@ export class VaccinationsService {
         return await this.vaccinationRepository.find();
     }
 
-    async getUserVaccines(claims: Claims) {
-        const req = await this.userRepository.findOne( { where: { id: claims.id }, relations: ['vaccination'] });
+    async getUserVaccines(userId: string) {
+        const req = await this.userRepository.findOne( { where: { id: userId }, relations: ['vaccination'] });
         return req.vaccination;
     }
 
@@ -40,6 +39,7 @@ export class VaccinationsService {
         const user = this.userRepository.create();
         user.id = claims.id;
         user.vaccination = trueVaccines;
+        console.log(user);
         await this.userRepository.save(user);
     }
 

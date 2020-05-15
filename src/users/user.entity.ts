@@ -2,7 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 import { Role } from '../auth/models/role.entity';
 import { IsUnique } from 'src/helpers/unique.decorator';
 import { Exclude } from 'class-transformer';
-import {ExtraVaccination} from "../vaccinations/extra_vaccination.entity";
+import { ExtraVaccination } from '../vaccinations/extra_vaccination.entity';
 import { Vaccination } from '../vaccinations/vaccination.entity';
 
 @Entity()

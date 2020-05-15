@@ -44,9 +44,12 @@ export class Personal {
     @Column({ nullable: true })
     emergencyContact: string;
 
+    @Column()
+    userId: string;
+
     @Exclude()
     @IsUnique<Personal>(o => o.id, { message: 'Personal information already exists. Please use Put method to edit' })
     @OneToOne(() => User)
     @JoinColumn()
-    user: string;
+    user: User;
 }

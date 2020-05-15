@@ -7,8 +7,7 @@ import { UsersModule } from './users/users.module';
 import { PersonalModule } from './personal/personal.module';
 import { isUnique } from './helpers/unique.decorator';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import {VaccinationsModule} from "./vaccinations/vaccinations.module";
-import { DoctorController } from './doctor/doctor.controller';
+import { VaccinationsModule } from './vaccinations/vaccinations.module';
 import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
@@ -21,7 +20,7 @@ import { DoctorModule } from './doctor/doctor.module';
     VaccinationsModule,
     DoctorModule
   ],
-  controllers: [AppController, DoctorController],
+  controllers: [AppController],
   providers: [
     AppService,
     isUnique,

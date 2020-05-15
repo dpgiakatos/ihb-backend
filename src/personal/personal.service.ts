@@ -12,12 +12,12 @@ export class PersonalService {
     ) {}
 
     findByUser(userId: string): Promise<Personal> {
-        return this.personalRepository.findOne({ user: userId });
+        return this.personalRepository.findOne({ userId });
     }
 
     async create(personal: CreatePersonalBindings, userId: string) {
         const newPersonal = this.personalRepository.create(personal);
-        newPersonal.user = userId;
+        newPersonal.userId = userId;
         await this.personalRepository.save(newPersonal);
     }
 
