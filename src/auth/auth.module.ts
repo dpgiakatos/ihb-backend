@@ -11,7 +11,7 @@ import { Role } from './models/role.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { AuthGuard } from './guards/auth.guard';
-import { PersonalModule } from 'src/personal/personal.module';
+import { PersonalModule } from '../personal/personal.module';
 
 @Module({
   imports: [

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            text-align: center;
+            padding-top: 16px;
+        }
+
+        .button {
+            background-color: #008cba;
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        .grey-font-color {
+            color: #888888;
+        }
+
+        .logo {
+            width: 250px;
+        }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+        <img src="https://internationalhealthbooklet.tech/assets/img/front-page/png/logo.png" alt="IHB logo" class="logo">
+        <h3>Verify account</h3>
+        <p>
+            Welcome to International Health Booklet! <br />
+            To complete your account registration please click on the button "Verify".
+        </p>
+        <a class="button" href="<%= buttonUrl %>">Verify</a>
+        <p>
+            If you did not ask for an account please ignore this email.
+        </p>
+        <p class="grey-font-color">Powered by InternationalHealthBooklet</p>
+    </div>
+  </body>
+</html>

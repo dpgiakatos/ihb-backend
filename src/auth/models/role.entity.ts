@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Role as RoleEnum } from 'src/auth/models/claims.interface';
+import { Role as RoleEnum } from '../models/claims.interface';
 import { User } from '../../users/user.entity';
 
 @Entity()

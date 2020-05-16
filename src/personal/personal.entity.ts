@@ -1,6 +1,6 @@
 import { Entity, Unique, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/user.entity';
-import { IsUnique } from 'src/helpers/unique.decorator';
+import { IsUnique } from '../helpers/unique.decorator';
 import { Exclude } from 'class-transformer';
 
 @Entity()

@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, ValidationError } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UnprocessableEntityException } from './helpers/unprocessable-entity-exception.interface';
-import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -17,8 +17,6 @@ async function bootstrap() {
     }
   }));
 
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
-  await app.listen(3000);
+  await app.listen(app.get(ConfigService).get<number>('port'));
 }
 bootstrap();
