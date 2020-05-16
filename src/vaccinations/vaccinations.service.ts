@@ -28,7 +28,7 @@ export class VaccinationsService {
         return req.vaccination;
     }
 
-    async editVaccinations(vaccines: { [key: string]: boolean }, claims: Claims) {
+    async editVaccinations(vaccines: { [key: string]: boolean }, userId: string) {
         const trueVaccines = [];
         const list = await this.vaccinationRepository.find({ where: { id: In(Object.keys(vaccines)) } });
         for (const value of list) {
@@ -37,58 +37,58 @@ export class VaccinationsService {
             }
         }
         const user = this.userRepository.create();
-        user.id = claims.id;
+        user.id = userId;
         user.vaccination = trueVaccines;
         console.log(user);
         await this.userRepository.save(user);
     }
 
-    async findExtraVaccinations(page: number, claims: Claims) {
+    async findExtraVaccinations(page: number, userId: string) {
         return await this.extraVaccinationRepository.find({
-            where: { user: this.userRepository.create({ id: claims.id }) },
+            where: { user: this.userRepository.create({ id: userId }) },
             skip: (page * 10) - 10,
             take: 10,
             order: { id: 'ASC' }
         });
     }
 
-    async countExtraVaccinations(claims: Claims) {
+    async countExtraVaccinations(userId: string) {
         return await this.extraVaccinationRepository.count({
-            where: { user: this.userRepository.create({ id: claims.id }) }
+            where: { user: this.userRepository.create({ id: userId }) }
         });
     }
 
-    async addExtraVaccinations(vaccine: AddExtraVaccinationsBindingModel, claims: Claims) {
-        return await this.extraVaccinationRepository.save(this.extraVaccinations(vaccine, claims));
+    async addExtraVaccinations(vaccine: AddExtraVaccinationsBindingModel, userId: string) {
+        return await this.extraVaccinationRepository.save(this.extraVaccinations(vaccine, userId));
     }
 
-    async editExtraVaccinations(id: number, vaccine: AddExtraVaccinationsBindingModel, claims: Claims) {
+    async editExtraVaccinations(id: number, vaccine: AddExtraVaccinationsBindingModel, userId: string) {
         const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] });
-        if (req.user.id !== claims.id) {
+        if (req.user.id !== userId) {
             throw new UnauthorizedException();
         } else {
-            const extra = this.extraVaccinations(vaccine, claims);
+            const extra = this.extraVaccinations(vaccine, userId);
             extra.id = id;
             return await this.extraVaccinationRepository.save(extra);
         }
     }
 
-    async deleteExtraVaccinations(id: number, claims: Claims) {
+    async deleteExtraVaccinations(id: number, userId: string) {
         const req = await this.extraVaccinationRepository.findOne({ where: { id: id }, relations: ['user'] })
-        if (req.user.id !== claims.id) {
+        if (req.user.id !== userId) {
             throw new UnauthorizedException();
         } else {
             const user = this.userRepository.create();
-            user.id = claims.id;
+            user.id = userId;
             const extra = this.extraVaccinationRepository.create();
             extra.id = id;
             await this.extraVaccinationRepository.delete(extra);
         }
     }
 
-    private extraVaccinations(vaccine: AddExtraVaccinationsBindingModel, claims: Claims) {
+    private extraVaccinations(vaccine: AddExtraVaccinationsBindingModel, userId: string) {
         const user = this.userRepository.create();
-        user.id = claims.id;
+        user.id = userId;
         const extra = this.extraVaccinationRepository.create();
         extra.name = vaccine.name;
         extra.date = new Date();

@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
-import { Claims, Role } from '../auth/models/claims.interface';
-import { User } from '../auth/decorators/user.decorator'
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Role } from '../auth/models/claims.interface';
 import { AddExtraVaccinationsBindingModel } from './models/vaccinations.bindings';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { VaccinationsService } from './vaccinations.service';
@@ -19,52 +18,55 @@ export class VaccinationsController {
         return await this.vaccinationsService.findAllVaccines();
     }
 
-    @Get('user_vaccines')
-    async getUserVaccines(@User() claims: Claims) {
-        return await this.vaccinationsService.getUserVaccines(claims.id);
-    }
-
-    @Get('user_vaccines/:id')
-    @Roles(Role.Doctor)
-    async getUserVaccinesId(@Param('id') id: string) {
+    @Get('user_vaccines/:userId')
+    async getUserVaccinesId(@Param('userId') id: string) {
         return await this.vaccinationsService.getUserVaccines(id);
     }
 
-    @Post('edit_vaccinations')
+    @Post('edit_vaccinations/:userId')
     @Roles(Role.Doctor)
-    async editVaccinations(@Body() vaccines: { [key: string]: boolean }, @User() claims: Claims) {
-        await this.vaccinationsService.editVaccinations(vaccines, claims);
+    async editVaccinations(
+        @Param('userId') id: string,
+        @Body() vaccines: { [key: string]: boolean }
+    ) {
+        await this.vaccinationsService.editVaccinations(vaccines, id);
     }
 
-    @Get('extra_vaccinations/:page')
+    @Get('extra_vaccinations')
     async findExtraVaccinations(
-        @Param('page', ParseIntPipe) page: number,
-        @User() claims: Claims
+        @Query('userId') id: string,
+        @Query('vaccinePageId') page: number
     ) {
-        return await this.vaccinationsService.findExtraVaccinations(page, claims);
+        return await this.vaccinationsService.findExtraVaccinations(page, id);
     }
 
-    @Get('count_extra_vaccinations')
-    async countExtraVaccinations(@User() claims: Claims) {
-        return await this.vaccinationsService.countExtraVaccinations(claims);
+    @Get('count_extra_vaccinations/:userId')
+    async countExtraVaccinations(@Param('userId') id: string) {
+        return await this.vaccinationsService.countExtraVaccinations(id);
     }
 
-    @Post('add_extra_vaccinations')
-    async addExtraVaccinations(@Body() vaccine: AddExtraVaccinationsBindingModel, @User() claims: Claims) {
-        return await this.vaccinationsService.addExtraVaccinations(vaccine, claims);
+    @Post('add_extra_vaccinations/:userId')
+    @Roles(Role.Doctor)
+    async addExtraVaccinations(@Param('userId') id: string, @Body() vaccine: AddExtraVaccinationsBindingModel) {
+        return await this.vaccinationsService.addExtraVaccinations(vaccine, id);
     }
 
-    @Put('edit_extra_vaccinations/:id')
+    @Put('edit_extra_vaccinations')
+    @Roles(Role.Doctor)
     async editExtraVaccinations(
-        @Param('id', ParseIntPipe) id: number,
+        @Query('vaccineId') vaccineId: number,
+        @Query('userId') userId: string,
         @Body() vaccine: AddExtraVaccinationsBindingModel,
-        @User() claims: Claims
     ) {
-        return await this.vaccinationsService.editExtraVaccinations(id, vaccine, claims);
+        return await this.vaccinationsService.editExtraVaccinations(vaccineId, vaccine, userId);
     }
 
-    @Delete('delete_extra_vaccinations/:id')
-    async deleteExtraVaccinations(@Param('id', ParseIntPipe) id: number, @User() claims: Claims) {
-        await this.vaccinationsService.deleteExtraVaccinations(id, claims);
+    @Delete('delete_extra_vaccinations')
+    @Roles(Role.Doctor)
+    async deleteExtraVaccinations(
+        @Query('vaccineId') vaccineId: number,
+        @Query('userId') userId: string
+    ) {
+        await this.vaccinationsService.deleteExtraVaccinations(vaccineId, userId);
     }
 }
