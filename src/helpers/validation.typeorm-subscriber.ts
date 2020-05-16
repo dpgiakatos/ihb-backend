@@ -13,6 +13,10 @@ export class OnValidationSubscriber implements EntitySubscriberInterface<unknown
   }
 
   private async validate<T>(entity: T) {
+    console.log(entity);
+    if (!entity) {
+      return true;
+    }
     const validationErrors = await validate(entity);
     if (validationErrors.length !== 0) {
       throw UnprocessableEntityException.fromValidationErrorArray(validationErrors);

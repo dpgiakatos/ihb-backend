@@ -13,6 +13,8 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import Configuration from './config/configuration';
 import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
 import { useContainer } from 'class-validator';
+import { VaccinationsModule } from './vaccinations/vaccinations.module';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { useContainer } from 'class-validator';
       load: [Configuration],
       isGlobal: true
     })
+    DoctorModule
+    VaccinationsModule,
   ],
   controllers: [AppController],
   providers: [
