@@ -1,8 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique, OneToMany } from 'typeorm';
 import { Role } from '../auth/models/role.entity';
+import {ExtraVaccination} from "../vaccinations/extra_vaccination.entity";
+import { Vaccination } from '../vaccinations/vaccination.entity';
+import { Allergic } from  '../allergic/allergic.entity';
 import { IsUnique } from 'src/helpers/unique.decorator';
 import { Hospital } from 'src/hospital/hospital.entity';
-import { HospitalModule } from 'src/hospital/hospital.module';
 
 @Entity()
 @Unique(['email'])
@@ -20,6 +22,6 @@ export class User {
     @OneToMany(() => Role, role => role.user, { eager: true })
     roles: Role[];
 
-    // @OneToMany(() => Hospital, hospital => hospital.user)
+    @OneToMany(() => Hospital, hospital => hospital.user)
     hospital: Hospital[];
 }

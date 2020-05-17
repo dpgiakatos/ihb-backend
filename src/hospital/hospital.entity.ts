@@ -1,8 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm'
 import { User } from 'src/users/user.entity';
+import { Exclude } from 'class-transformer'
 
 @Entity()
 export class Hospital {
+    @Exclude()
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,16 +17,16 @@ export class Hospital {
     @Column()
     country: string;
 
-    @Column()
+    @Column({ nullable: true })
     cause: string;
 
-    @Column()
+    @Column({ nullable: true })
     description: string;
 
-    @Column()
+    @Column({ nullable: true, type: 'date' })
     start: Date;
 
-    @Column()
+    @Column({nullable: true, type: 'date' })
     end: Date;
 
     @ManyToOne(() => User, user => user.hospital)
