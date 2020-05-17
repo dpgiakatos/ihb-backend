@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, ParseIntPipe, Put, Delete } from '@nestjs/common';
 import { HospitalService } from './hospital.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hospital } from './hospital.entity';
@@ -6,19 +6,30 @@ import { User } from 'src/auth/decorators/user.decorator';
 import { Repository } from 'typeorm';
 import { CreateHospitalBindings } from './hospital.bindings';
 import { Claims } from 'src/auth/models/claims.interface';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
+@Auth
 @Controller('dashboard')
 export class HospitalController {
 
     constructor(
+        private hospitalService: HospitalService,
         @InjectRepository(Hospital)
         private hospitalRepository: Repository<Hospital>,
     ){}
 
-    @Post('hospitals')
-    async getHospital(@Body() hospital: Hospital)
+    @Get('hospitals:page')
+    async getSomeTreatments(
+        @Param('page', ParseIntPipe) page: number, 
+        @User() user: Claims
+    ){
+        return await this.hospitalService.countHospitalTreatments(page, user);
+    }
+
+    @Get('user_treatments')
+    async getUserTreatments(@User() user: Claims)
     {
-        console.log(hospital);
+        return await this.hospitalService.getUserTreatments(user);
     }
 
     @Get('hospitals')
@@ -27,18 +38,30 @@ export class HospitalController {
     }
 
     @Post('hospitals')
-    async addHospitalTreatments(
+    async addHospitalTreatments( 
+        @Body() hospital: CreateHospitalBindings,
+        @User() user: Claims
+    ){      
+        return await this.hospitalService.addHospitalTreatment(hospital, user);
+    }
+
+    @Put('hospitals/:id')
+    async editHospitalTreatments(
+        @Param('id', ParseIntPipe) id: number,
         @Body() hospital: CreateHospitalBindings,
         @User() user: Claims
     ){
-        const newHospital = this.hospitalRepository.create(hospital);
-        newHospital.user.id = user.id;
-        await this.hospitalRepository.save(newHospital);
+        return await this.hospitalService.editHospitalTreatments( id, hospital, user);
     }
 
-    // @Delete('hospitals')
+    @Delete('hospitals/:id')
+    async deleteHospitalTreatments(
+        @Param('id', ParseIntPipe) id: number,
+        @User() user: Claims
+    ){
+        await this.hospitalService.deleteHospitalTreatments(id, user);
+    }
 
-    // @Put('hospitals')
 
 
  }

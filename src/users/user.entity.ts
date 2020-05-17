@@ -7,7 +7,6 @@ import { Vaccine } from './vaccinations/vaccine.entity';
 import { Allergic } from  '../allergic/allergic.entity';
 import { IsUnique } from 'src/helpers/unique.decorator';
 import { Hospital } from 'src/hospital/hospital.entity';
-import { HospitalModule } from 'src/hospital/hospital.module';
 
 @Entity()
 @Unique(['email'])
@@ -37,5 +36,6 @@ export class User {
     allergic: Allergic[];
 
     // @OneToMany(() => Hospital, hospital => hospital.user)
+    @OneToMany(() => Hospital, hospital => hospital.user)
     hospital: Hospital[];
 }
