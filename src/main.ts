@@ -13,7 +13,23 @@ async function bootstrap() {
     },
     whitelist: false,
     exceptionFactory: (errors: ValidationError[]) => {
-      throw UnprocessableEntityException.fromValidationErrorArray(errors);
+
+      const mappedErrors: UnprocessableEntitySchema['failingConstraints'] = {};
+      
+      errors.forEach(error => {
+
+        const constraints: UnprocessableEntitySchema['failingConstraints']['any'] = [];
+        Object.keys(error.constraints).forEach(constraint => {
+          constraints.push({
+            constraint,
+            message: error.constraints[constraint]
+          });
+        });
+
+        mappedErrors[error.property] = constraints;
+        
+      });
+      throw new UnprocessableEntityException({ failingConstraints: mappedErrors });
     }
   }));
 

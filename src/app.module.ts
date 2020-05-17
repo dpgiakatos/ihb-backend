@@ -15,6 +15,7 @@ import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber'
 import { useContainer } from 'class-validator';
 import { VaccinationsModule } from './vaccinations/vaccinations.module';
 import { DoctorModule } from './doctor/doctor.module';
+import { AllergicModule } from './allergic/allergic.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { DoctorModule } from './doctor/doctor.module';
     })
     DoctorModule
     VaccinationsModule,
+    AllergicModule,
   ],
   controllers: [AppController],
   providers: [

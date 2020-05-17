@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './models/role.entity';
 import { Role as RoleEnum } from './models/claims.interface';
 import { Repository } from 'typeorm';
+import { UnprocessableEntityException } from '../helpers/UnprocessableEntityException';
 
 @Injectable()
 export class AuthService {
@@ -36,10 +37,17 @@ export class AuthService {
     }
 
     private async verifyCredentials(user: User, password: string) {
-        if (user && await compare(password, user.password)) {
-            return;
+        if (!user || !(await compare(password, user.password))) {
+            throw new UnprocessableEntityException({
+                failingConstraints: {
+                    all: [
+                        {
+                            constraint: 'isValidCredentials'
+                        }
+                    ]
+                }
+            });
         }
-        throw new UnauthorizedException('Invalid credentials');
     }
 
     private generateJWT(claims: Claims) {
