@@ -1,5 +1,5 @@
 import { IsString, IsOptional } from 'class-validator';
-import { IsDateOnlyString } from '../helpers/date.decorator';
+import { IsDateOnlyString } from '../../helpers/date.decorator';
 
 
 export class CreatePersonalBindings {

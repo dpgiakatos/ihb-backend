@@ -5,10 +5,9 @@ import { UsersService } from '../users/users.service';
 import { User } from './decorators/user.decorator';
 import { LoginBindingModel, RegisterBindingModel } from './models/auth.bindings';
 import { Claims, Role } from './models/claims.interface';
-import { Roles } from './decorators/roles.decorator';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
-import { PersonalService } from '../personal/personal.service';
+import { PersonalService } from '../users/personal/personal.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')

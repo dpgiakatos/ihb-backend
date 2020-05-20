@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Personal } from '../personal/personal.entity';
+import { Personal } from '../users/personal/personal.entity';
 import { Like, Not, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Claims, Role } from '../auth/models/claims.interface';

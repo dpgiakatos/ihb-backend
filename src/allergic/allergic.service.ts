@@ -1,9 +1,9 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import {InjectRepository} from "@nestjs/typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Allergic } from './allergic.entity';
-import {Repository} from "typeorm";
-import { Claims } from 'src/auth/models/claims.interface';
-import { User } from 'src/users/user.entity';
+import { Repository } from 'typeorm';
+import { Claims } from '../auth/models/claims.interface';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class AllergicService {

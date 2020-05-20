@@ -3,9 +3,9 @@ import { AllergicService } from './allergic.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Allergic } from './allergic.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/auth/decorators/user.decorator';
-import { Claims } from 'src/auth/models/claims.interface';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { User } from '../auth/decorators/user.decorator';
+import { Claims } from '../auth/models/claims.interface';
+import { Auth } from '../auth/decorators/auth.decorator';
 
 @Auth
 @Controller('dashboard/allergic')

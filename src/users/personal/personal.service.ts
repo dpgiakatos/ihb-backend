@@ -24,7 +24,7 @@ export class PersonalService {
     async update(personal: DeepPartial<Personal>, userId: string) {
         const existing = await this.findByUser(userId);
 
-        Object.assign(existing, personal);
+        this.personalRepository.merge(existing, personal);
 
         await this.personalRepository.save(existing);
     }

@@ -2,24 +2,23 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { compare }  from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { Claims } from './models/claims.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './models/role.entity';
 import { Role as RoleEnum } from './models/claims.interface';
 import { Repository } from 'typeorm';
-import { UnprocessableEntityException } from '../helpers/UnprocessableEntityException';
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
-        @InjectRepository(Role) private roleRepository: Repository<Role>
+        @InjectRepository(Role) private rolesRepository: Repository<Role>
     ) { }
 
     async verifyCredentialsAndGenerateJWT(email: string, password: string): Promise<string> {
-        const user = await this.usersService.findOne(email);
+        const user = await this.usersService.findOneByEmail(email);
         await this.verifyCredentials(user, password);
         return this.generateJWT({
             id: user.id,
@@ -28,26 +27,19 @@ export class AuthService {
     }
 
     async setUserRole(user: User, role: RoleEnum): Promise<void> {
-        const userRole = this.roleRepository.create({
+        const userRole = this.rolesRepository.create({
             user,
             role
         });
 
-        await this.roleRepository.save(userRole);
+        await this.rolesRepository.save(userRole);
     }
 
     private async verifyCredentials(user: User, password: string) {
-        if (!user || !(await compare(password, user.password))) {
-            throw new UnprocessableEntityException({
-                failingConstraints: {
-                    all: [
-                        {
-                            constraint: 'isValidCredentials'
-                        }
-                    ]
-                }
-            });
+        if (user && await compare(password, user.password)) {
+            return;
         }
+        throw new UnauthorizedException();
     }
 
     private generateJWT(claims: Claims) {

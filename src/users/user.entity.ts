@@ -2,8 +2,8 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 import { Role } from '../auth/models/role.entity';
 import { IsUnique } from '../helpers/unique.decorator';
 import { Exclude } from 'class-transformer';
-import { ExtraVaccination } from '../vaccinations/extra_vaccination.entity';
-import { Vaccination } from '../vaccinations/vaccination.entity';
+import { ExtraVaccination } from './extra-vaccinations/extra-vaccination.entity';
+import { Vaccine } from './vaccinations/vaccine.entity';
 import { Allergic } from  '../allergic/allergic.entity';
 
 @Entity()
@@ -23,13 +23,13 @@ export class User {
     @OneToMany(() => Role, role => role.user, { eager: true })
     roles: Role[];
 
-    @OneToMany(type => ExtraVaccination, extraVaccination => extraVaccination.user)
-    extraVaccination: ExtraVaccination[];
+    @OneToMany(() => ExtraVaccination, extraVaccination => extraVaccination.user)
+    extraVaccinations: ExtraVaccination[];
 
-    @ManyToMany(type => Vaccination)
+    @ManyToMany(() => Vaccine)
     @JoinTable()
-    vaccination: Vaccination[];
+    vaccinations: Vaccine[];
     
-    @OneToMany(type => Allergic, allergic => allergic.user)
+    @OneToMany(() => Allergic, allergic => allergic.user)
     allergic: Allergic[];
 }
