@@ -6,8 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { isUnique } from './helpers/unique.decorator';
-import { Hospital } from './hospital/hospital.entity';
-import { HospitalModule } from './hospital/hospital.module';
+import { HospitalModule } from './users/hospital/hospital.module';
+import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { DoctorModule } from './doctor/doctor.module';
+import { AllergicModule } from './users/allergic/allergic.module';
+import { ModuleRef, APP_INTERCEPTOR } from '@nestjs/core';
+import { useContainer } from 'class-validator';
+import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import Configuration from './config/configuration';
 
 @Module({
   imports: [
