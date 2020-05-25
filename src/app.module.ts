@@ -13,9 +13,8 @@ import Configuration from './config/configuration';
 import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
 import { useContainer } from 'class-validator';
 import { DoctorModule } from './doctor/doctor.module';
-import { AllergicModule } from './allergic/allergic.module';
-import { Hospital } from './hospital/hospital.entity';
-import { HospitalModule } from './hospital/hospital.module';
+import { AllergicModule } from './users/allergic/allergic.module';
+import { HospitalModule } from './users/hospital/hospital.module';
 
 @Module({
   imports: [

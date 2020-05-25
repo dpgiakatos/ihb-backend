@@ -2,14 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import { UsersService } from '../users/users.service';
-import { AuthService } from '../auth/auth.service';
-import { PersonalService } from '../users/personal/personal.service';
 import { Vaccine } from '../users/vaccinations/vaccine.entity';
-
-
 import { Role } from '../auth/models/claims.interface';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
+import { PersonalService } from '../users/personal/personal.service';
+import { AllergicService } from '../users/allergic/allergic.service';
+import { HospitalService } from '../users/hospital/hospital.service';
 
 async function bootstrap() {
     const app = await NestFactory.createApplicationContext(AppModule);
@@ -18,13 +17,62 @@ async function bootstrap() {
     const userService = app.get(UsersService);
     const authService = app.get(AuthService);
     const personalService = app.get(PersonalService);
-    const vaccinesRepo = app.get<string, Repository<Vaccine>>(getRepositoryToken(Vaccine))
+    const allergicService = app.get(AllergicService);
+    const hospitalService = app.get(HospitalService);
+
+    const vaccinesRepo = app.get<string, Repository<Vaccine>>(getRepositoryToken(Vaccine));
     
     const user = await userService.create('user@user.com', 'test');
     await authService.setUserRole(user, Role.User);
-    await personalService.create({ firstName: 'First', lastName: 'Last' }, user.id);
     const doctor = await userService.create('doctor@doctor.com', 'test');
     await authService.setUserRole(doctor, Role.Doctor);
+
+    await personalService.create({
+        firstName: 'First',
+        lastName: 'Last',
+        ssnvs: '01234567890',
+        birthDate: '1950-01-01',
+        country: 'Greece',
+        fatherFirstName: 'FatherFname',
+        fatherLastName: 'FatherLname',
+        motherFirstName: 'MotherFname',
+        motherLastName: 'MotherLname',
+        mobilePhone: '6912345678',
+        emergencyContact: '6987654321'
+    },
+        user.id);
+    await allergicService.addAllergy({
+        name: 'Milk Allergy',
+        dDescription: 'a',
+        tDescription: 'a'
+    },
+        user.id);
+    await allergicService.addAllergy({
+        name: 'Egg Allergy',
+        dDescription: 'a',
+        tDescription: 'a'
+    },
+        user.id);
+    await hospitalService.addHospitalTreatment({
+        name: 'Ippokrateion',
+        city: 'Thessaloniki',
+        country: 'Greece',
+        cause: 'Pneumonia',
+        treatment: 'a',
+        starts: '2020-01-01',
+        finishes: '2020-01-04'
+    },
+        user.id);
+    await hospitalService.addHospitalTreatment({
+        name: 'AHEPA',
+        city: 'Thessaloniki',
+        country: 'Greece',
+        cause: 'Chest Pain',
+        treatment: 'a',
+        starts: '2020-05-01',
+        finishes: '2020-05-20'
+    },
+        user.id);
 
     await vaccinesRepo.insert([
         vaccinesRepo.create({ name: 'Tuberculosis' }),

@@ -1,12 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
-import { User } from 'src/users/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm'
+import { User } from '../user.entity';
 import { Exclude } from 'class-transformer'
 
 @Entity()
 export class Hospital {
     @Exclude()
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     name: string;
@@ -21,15 +21,20 @@ export class Hospital {
     cause: string;
 
     @Column({ nullable: true })
-    description: string;
+    treatment: string;
 
     @Column({ nullable: true, type: 'date' })
-    start: Date;
+    starts: string;
 
     @Column({ nullable: true, type: 'date' })
-    end: Date;
+    finishes: string;
 
-    @ManyToOne(() => User, user => user.hospital)
+    @Column()
+    userId: string;
+
+    @Exclude()
+    @ManyToOne(() => User)
+    @JoinColumn()
     user: User;
 
 }
