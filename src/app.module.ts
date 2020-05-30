@@ -6,14 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { isUnique } from './helpers/unique.decorator';
-import { APP_INTERCEPTOR, ModuleRef } from '@nestjs/core';
+import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { DoctorModule } from './doctor/doctor.module';
+import { ModuleRef, APP_INTERCEPTOR } from '@nestjs/core';
+import { useContainer } from 'class-validator';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import Configuration from './config/configuration';
-import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
-import { useContainer } from 'class-validator';
-import { DoctorModule } from './doctor/doctor.module';
-import { AllergicModule } from './allergic/allergic.module';
 
 @Module({
   imports: [
@@ -24,7 +23,7 @@ import { AllergicModule } from './allergic/allergic.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'secure',
+      password: 'root',
       database: 'ihb',
       subscribers: [OnValidationSubscriber],
       synchronize: true,
@@ -45,7 +44,8 @@ import { AllergicModule } from './allergic/allergic.module';
       isGlobal: true
     }),
     DoctorModule,
-    AllergicModule,
+    TypeOrmModule.forRoot(),
+    UsersModule
   ],
   controllers: [AppController],
   providers: [
