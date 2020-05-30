@@ -1,11 +1,12 @@
-import { Controller, Post, Body, Get, Param, Put, Delete, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { HospitalService } from './hospital.service';
 import { Hospital } from './hospital.entity';
 import { User } from '../../auth/decorators/user.decorator';
 import { HospitalBindings } from './hospital.bindings';
-import { Claims } from '../../auth/models/claims.interface';
+import { Claims, Role } from '../../auth/models/claims.interface';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { UsersService } from '../users.service';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @Auth
 @Controller('user')
@@ -26,6 +27,7 @@ export class HospitalController {
     }
 
     @Get(':userId/hospital-treatments')
+    @Roles(Role.Doctor)
     async getSomeTreatments(
         @Param('userId') id: string, 
         @Query('page') page: 1
@@ -38,6 +40,7 @@ export class HospitalController {
     }
 
     @Post(':userId/hospital-treatments')
+    @Roles(Role.Doctor)
     async addHospitalTreatments( 
         @Param('userId') id: string,
         @Body() hospital: HospitalBindings
@@ -47,6 +50,7 @@ export class HospitalController {
     }
 
     @Put('hospitals/:hospitalTreatmentId')
+    @Roles(Role.Doctor)
     async editHospitalTreatments(
         @Param('hospitalTreatmentId') treatmentId: string,
         @Body() hospital: HospitalBindings
@@ -55,6 +59,7 @@ export class HospitalController {
     }
 
     @Delete('hospitals/:hospitalTreatmentId')
+    @Roles(Role.Doctor)
     async deleteHospitalTreatments(
         @Param('hospitalTreatmentId') treatmentId: string
     ): Promise<void>{

@@ -69,7 +69,7 @@ export class AllergicService {
         if (!existing) {
             throw new NotFoundException();
         }
-        this.allergicRepository.remove(existing);
+        await this.allergicRepository.remove(existing);
         // const req = await this.allergicRepository.findOne({ where: { id: id }, relations: ['user'] })
         //     const user = this.userRepository.create();
         //     user.id = claims.id;

@@ -96,7 +96,7 @@ export class HospitalService {
         if (!existing) {
             throw new NotFoundException();
         }
-        this.hospitalRepository.remove(existing);
+        await this.hospitalRepository.remove(existing);
         // const req = await this.hospitalRepository.findOne({
         //     where: { id: id},
         //     relations: ['user']
