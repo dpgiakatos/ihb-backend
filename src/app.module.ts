@@ -29,7 +29,6 @@ import Configuration from './config/configuration';
       synchronize: true,
       logging: true
     }),
-    UsersModule,
     MailerModule.forRoot({
       transport: { jsonTransport: true },
       preview: true,
@@ -55,9 +54,6 @@ import Configuration from './config/configuration';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor
     }
-  ],
-  exports: [
-    UsersModule
   ]
 })
 export class AppModule implements OnModuleInit  {
