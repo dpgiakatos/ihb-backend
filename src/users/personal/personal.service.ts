@@ -28,4 +28,8 @@ export class PersonalService {
 
         await this.personalRepository.save(existing);
     }
+
+    getRepository(): Repository<Personal> {
+        return this.personalRepository;
+    }
 }

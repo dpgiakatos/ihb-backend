@@ -22,4 +22,10 @@ export class DoctorController {
     async access(@Param('userId') id: string, @User() claims: Claims) {
         await this.doctorService.accessToUser(id, claims);
     }
+
+    @Get(':userId/has')
+    @Roles(Role.Doctor)
+    async has(@Param('userId') id: string, @User() claims: Claims) {
+        return this.doctorService.hasAccess(id, claims);
+    }
 }

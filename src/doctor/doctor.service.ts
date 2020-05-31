@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Personal } from '../users/personal/personal.entity';
 import { Like, Not, Repository } from 'typeorm';
-import { User } from '../users/user.entity';
 import { Claims } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
+import { PersonalService } from '../users/personal/personal.service';
 
 @Injectable()
 export class DoctorService {
 
     constructor(
-        @InjectRepository(Personal)
-        private personalRepository: Repository<Personal>,
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
+        private personalService: PersonalService,
         @InjectRepository(Alert)
         private alertRepository: Repository<Alert>
     ) {}
@@ -23,7 +19,7 @@ export class DoctorService {
             return [];
         }
         if (!country) {
-            return await this.personalRepository.find({
+            return await this.personalService.getRepository().find({
                 select: [
                     'firstName',
                     'lastName',
@@ -37,7 +33,7 @@ export class DoctorService {
                 ]
             });
         } else {
-            return await this.personalRepository.find({
+            return await this.personalService.getRepository().find({
                 select: [
                     'firstName',
                     'lastName',
@@ -53,11 +49,25 @@ export class DoctorService {
         }
     }
 
-    async accessToUser(patientId: string, claims: Claims) {
+    async accessToUser(patientId: string, claims: Claims): Promise<void> {
         const alert = this.alertRepository.create({
             patient: { id: patientId },
             doctor: { id: claims.id }
         });
         await this.alertRepository.save(alert);
+    }
+
+    async hasAccess(patientId: string, claims:Claims): Promise<boolean> {
+        const result = this.alertRepository.find({
+            where: [
+                { patient: patientId },
+                { doctor: claims.id }
+                //{ accessTime: Date.now() }
+            ]
+        });
+        if (result) {
+            return true;
+        }
+        return false;
     }
 }

@@ -18,9 +18,10 @@ import { AllergicService } from './allergic/allergic.service';
 import { HospitalService } from './hospital/hospital.service';
 import { AllergicController } from './allergic/allergic.controller';
 import { HospitalController } from './hospital/hospital.controller';
+import { DoctorModule } from '../doctor/doctor.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Personal, Vaccine, ExtraVaccination, Allergic, Hospital])],
+  imports: [TypeOrmModule.forFeature([User, Personal, Vaccine, ExtraVaccination, Allergic, Hospital]), DoctorModule],
   providers: [UsersService, PersonalService, VaccinationsService, ExtraVaccinationsService, AllergicService, HospitalService],
   controllers: [UsersController, PersonalController, VaccinationsController, ExtraVaccinationsController, AllergicController, HospitalController],
   exports: [UsersService, PersonalService, TypeOrmModule]

@@ -10,7 +10,9 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 @Auth
 @Controller('user')
 export class PersonalController {
-  constructor(private personalService: PersonalService) { }
+  constructor(
+      private personalService: PersonalService
+  ) { }
 
   @Get('personal-information')
   async getPersonal(@User() user: Claims): Promise<Personal> {

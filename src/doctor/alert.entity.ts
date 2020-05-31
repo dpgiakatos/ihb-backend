@@ -7,7 +7,7 @@ export class Alert {
     id: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-    startAccessTime: Date;
+    accessTime: Date;
 
     @ManyToOne(() => User, user => user.patient)
     @JoinColumn()
