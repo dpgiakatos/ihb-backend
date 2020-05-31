@@ -4,6 +4,7 @@ import { Allergic } from './allergic.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { AllergicBindings } from './allergic.bindings';
+import { ExtraVaccination } from '../extra-vaccinations/extra-vaccination.entity';
 
 @Injectable()
 export class AllergicService {
@@ -76,5 +77,9 @@ export class AllergicService {
         //     const extra = this.allergicRepository.create();
         //     extra.id = id;
         //     await this.allergicRepository.delete(extra);   
+    }
+
+    async getUserId(allergicId: string): Promise<Allergic> {
+        return await this.allergicRepository.findOne(allergicId);
     }
 }

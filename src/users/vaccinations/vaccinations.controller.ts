@@ -4,13 +4,15 @@ import { Auth } from '../../auth/decorators/auth.decorator';
 import { VaccinationsService } from './vaccinations.service';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { User } from '../../auth/decorators/user.decorator';
+import { DoctorService } from '../../doctor/doctor.service';
 
 @Auth
 @Controller('user')
 export class VaccinationsController {
 
     constructor(
-        private vaccinationsService: VaccinationsService
+        private vaccinationsService: VaccinationsService,
+        private doctorService: DoctorService
     ) {}
 
     @Get('vaccinations')
@@ -26,17 +28,22 @@ export class VaccinationsController {
 
     @Get(':userId/vaccinations')
     @Roles(Role.Doctor)
-    async getUserVaccinesId(@Param('userId') userId: string) {
-        return await this.vaccinationsService.getUserVaccinations(userId);
+    async getUserVaccinesId(@Param('userId') userId: string, @User() claims: Claims) {
+        if (await this.doctorService.hasAccess(userId, claims)) {
+            return await this.vaccinationsService.getUserVaccinations(userId);
+        }
     }
 
     @Put(':userId/vaccinations')
     @Roles(Role.Doctor)
     async editVaccinations(
         @Param('userId') userId: string,
-        @Body() vaccines: { [key: string]: boolean }
+        @Body() vaccines: { [key: string]: boolean },
+        @User() claims: Claims
     ) {
-        await this.vaccinationsService.editVaccinations(vaccines, userId);
+        if (await this.doctorService.hasAccess(userId, claims)) {
+            await this.vaccinationsService.editVaccinations(vaccines, userId);
+        }
     }
 
 }

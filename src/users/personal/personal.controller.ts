@@ -6,12 +6,14 @@ import { Claims, Role } from '../../auth/models/claims.interface';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { UpdatePersonalBindings } from './personal.bindings';
 import { Roles } from '../../auth/decorators/roles.decorator';
+import { DoctorService } from '../../doctor/doctor.service';
 
 @Auth
 @Controller('user')
 export class PersonalController {
   constructor(
-      private personalService: PersonalService
+      private personalService: PersonalService,
+      private doctorService: DoctorService
   ) { }
 
   @Get('personal-information')
@@ -26,7 +28,9 @@ export class PersonalController {
 
   @Get(':userId/personal-information')
   @Roles(Role.Doctor)
-  async getSpecificPersonal(@Param('userId') userId: string): Promise<Personal> {
-    return await this.personalService.findByUser(userId);
+  async getSpecificPersonal(@Param('userId') userId: string, @User() claims:Claims): Promise<Personal> {
+    if (await this.doctorService.hasAccess(userId, claims)) {
+      return await this.personalService.findByUser(userId);
+    }
   }
 }

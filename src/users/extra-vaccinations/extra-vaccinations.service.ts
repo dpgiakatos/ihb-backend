@@ -45,7 +45,10 @@ export class ExtraVaccinationsService {
         if (!existing) {
             throw new NotFoundException();
         }
-        
         await this.extraVaccinationsRepository.remove(existing);
+    }
+
+    async getUserId(vaccineId: string): Promise<ExtraVaccination> {
+        return await this.extraVaccinationsRepository.findOne(vaccineId);
     }
 }

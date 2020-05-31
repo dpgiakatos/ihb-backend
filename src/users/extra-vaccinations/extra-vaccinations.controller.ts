@@ -7,12 +7,17 @@ import { AddExtraVaccinationBindingModel, UpdateExtraVaccinationBindingModel } f
 import { ExtraVaccinationsService } from './extra-vaccinations.service';
 import { UsersService } from '../users.service';
 import { ExtraVaccination } from './extra-vaccination.entity';
+import { DoctorService } from '../../doctor/doctor.service';
 
 @Auth
 @Controller('user')
 export class ExtraVaccinationsController {
     
-    constructor(private extraVaccinationsService: ExtraVaccinationsService, private userService: UsersService) { }
+    constructor(
+        private extraVaccinationsService: ExtraVaccinationsService,
+        private userService: UsersService,
+        private doctorService: DoctorService
+    ) { }
 
     @Get('extra-vaccinations')
     async getUserExtraVaccines(
@@ -27,11 +32,14 @@ export class ExtraVaccinationsController {
     @Roles(Role.Doctor)
     async getSpecificUserExtraVaccines(
         @Param('userId') id: string,
-        @Query('page') page = 1
+        @Query('page') page = 1,
+        @User() claims: Claims
     ): Promise<{ vaccinations: ExtraVaccination[]; count: number; }> {
-        await this.userService.assertExists(id);
-        const [vaccinations, count] = await this.extraVaccinationsService.findExtraVaccinations(id, page);
-        return { vaccinations, count };
+        if (await this.doctorService.hasAccess(id, claims)) {
+            await this.userService.assertExists(id);
+            const [vaccinations, count] = await this.extraVaccinationsService.findExtraVaccinations(id, page);
+            return {vaccinations, count};
+        }
     }
 
 
@@ -39,10 +47,13 @@ export class ExtraVaccinationsController {
     @Roles(Role.Doctor)
     async addExtraVaccinations(
         @Param('userId') id: string,
-        @Body() vaccination: AddExtraVaccinationBindingModel
+        @Body() vaccination: AddExtraVaccinationBindingModel,
+        @User() claims: Claims
     ): Promise<ExtraVaccination> {
-        await this.userService.assertExists(id);
-        return await this.extraVaccinationsService.addExtraVaccination(vaccination, id);
+        if (await this.doctorService.hasAccess(id, claims)) {
+            await this.userService.assertExists(id);
+            return await this.extraVaccinationsService.addExtraVaccination(vaccination, id);
+        }
     }
 
     @Put('extra-vaccination/:extraVaccinationId')
@@ -50,13 +61,23 @@ export class ExtraVaccinationsController {
     async editExtraVaccination(
         @Param('extraVaccinationId') vaccinationId: string,
         @Body() vaccination: UpdateExtraVaccinationBindingModel,
+        @User() claims: Claims
     ): Promise<ExtraVaccination> {
-        return await this.extraVaccinationsService.editExtraVaccination(vaccinationId, vaccination);
+        const vaccine = await this.extraVaccinationsService.getUserId(vaccinationId);
+        if (await this.doctorService.hasAccess(vaccine.user.id, claims)) {
+            return await this.extraVaccinationsService.editExtraVaccination(vaccinationId, vaccination);
+        }
     }
 
     @Delete('extra-vaccination/:extraVaccinationId')
     @Roles(Role.Doctor)
-    async deleteExtraVaccination(@Param('extraVaccinationId') vaccinationId: string): Promise<void> {
-        await this.extraVaccinationsService.deleteExtraVaccination(vaccinationId);
+    async deleteExtraVaccination(
+        @Param('extraVaccinationId') vaccinationId: string,
+        @User() claims: Claims
+        ): Promise<void> {
+        const vaccine = await this.extraVaccinationsService.getUserId(vaccinationId);
+        if (await this.doctorService.hasAccess(vaccine.user.id, claims)) {
+            await this.extraVaccinationsService.deleteExtraVaccination(vaccinationId);
+        }
     }
 }
