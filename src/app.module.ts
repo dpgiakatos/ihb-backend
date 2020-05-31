@@ -43,7 +43,6 @@ import Configuration from './config/configuration';
       isGlobal: true
     }),
     DoctorModule,
-    TypeOrmModule.forRoot(),
     UsersModule
   ],
   controllers: [AppController],
