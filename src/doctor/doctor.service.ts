@@ -58,13 +58,12 @@ export class DoctorService {
     }
 
     async hasAccess(patientId: string, claims:Claims): Promise<boolean> {
-        const result = this.alertRepository.find({
-            where: [
-                { patient: patientId },
-                { doctor: claims.id }
-                //{ accessTime: Date.now() }
-            ]
-        });
+        const result = await this.alertRepository
+            .createQueryBuilder('alert')
+            .where('DATE(alert.accessTime) = CURDATE()')
+            .andWhere('alert.patientId = :patient', { patient: patientId })
+            .andWhere('alert.doctorId = :doctor', { doctor: claims.id })
+            .getOne();
         if (result) {
             return true;
         }

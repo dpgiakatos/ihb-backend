@@ -26,6 +26,6 @@ export class DoctorController {
     @Get(':userId/has')
     @Roles(Role.Doctor)
     async has(@Param('userId') id: string, @User() claims: Claims) {
-        return this.doctorService.hasAccess(id, claims);
+        return await this.doctorService.hasAccess(id, claims);
     }
 }
