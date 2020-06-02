@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -10,6 +10,20 @@ export class UsersService {
         @InjectRepository(User)
         private usersRepository: Repository<User>
     ) {}
+
+    async editPassword(userId: string, oldPassword: string,newPassword: string){
+        const existing = await this.usersRepository.findOne(userId);
+        if (!existing) {
+            throw new NotFoundException();
+        }
+        else if (await compare(oldPassword, existing.password)){
+            existing.password = await hash(newPassword, 10);
+            this.usersRepository.save(existing);
+        }
+        else {
+            throw new UnauthorizedException();
+        }
+    }
 
 
     async assertExists(id: string) {
