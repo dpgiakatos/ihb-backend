@@ -4,6 +4,7 @@ import { Like, Not, Repository } from 'typeorm';
 import { Claims, Role } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
 import { PersonalService } from '../users/personal/personal.service';
+import { AlertLog } from './doctor.bindings';
 
 @Injectable()
 export class DoctorService {
@@ -73,7 +74,7 @@ export class DoctorService {
         return false;
     }
 
-    async getUserAlerts(claims: Claims) {
+    async getUserAlerts(claims: Claims): Promise<AlertLog[]> {
         return await this.alertRepository.createQueryBuilder( 'a')
             .select('a.accessTime', 'accessTime')
             .addSelect('p.firstName', 'firstName')
