@@ -31,16 +31,22 @@ export class VaccinationsService {
     }
 
     async editVaccinations(updatedVaccines: { [key: string]: boolean }, userId: string) {
-        const vaccinations = await this.vaccinesRepository.find({ where: {
-            id: In(Object.keys(updatedVaccines).filter(vaccineId => updatedVaccines[vaccineId])) 
-        } });
         const user = await this.usersService.findOneById(userId);
 
         if(!user) {
             throw new NotFoundException();
         }
+
+        const trueVaccines = Object.keys(updatedVaccines).filter(vaccineId => updatedVaccines[vaccineId]);
+        if (trueVaccines.length) {
+            const vaccinations = await this.vaccinesRepository.find({ where: {
+                id: In(trueVaccines) 
+            } });
+            user.vaccinations = vaccinations;
+        } else {
+            user.vaccinations = [];
+        }
         
-        user.vaccinations = vaccinations;
         await this.usersRepository.save(user);
     }
 
