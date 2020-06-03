@@ -43,9 +43,10 @@ export class VaccinationsController {
         @Body() vaccines: { [key: string]: boolean },
         @User() claims: Claims
     ): Promise<void> {
-        if (await this.doctorService.hasAccess(userId, claims)) {
-            await this.vaccinationsService.editVaccinations(vaccines, userId);
+        if (!(await this.doctorService.hasAccess(userId, claims))) {
+            throw new ForbiddenException();
         }
+        await this.vaccinationsService.editVaccinations(vaccines, userId);
     }
 
 }

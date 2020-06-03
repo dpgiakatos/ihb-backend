@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Not, Repository } from 'typeorm';
-import { Claims } from '../auth/models/claims.interface';
+import { Claims, Role } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
 import { PersonalService } from '../users/personal/personal.service';
 
@@ -58,6 +58,9 @@ export class DoctorService {
     }
 
     async hasAccess(patientId: string, claims:Claims): Promise<boolean> {
+        if (patientId === claims.id && claims.roles.some(r => r === Role.Doctor)) { // Doctors can edit their own data
+            return true;
+        }
         const result = await this.alertRepository
             .createQueryBuilder('alert')
             .where('DATE(alert.accessTime) = CURDATE()')

@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Hospital } from './hospital.entity';
 import { User } from '../user.entity'
 import { HospitalBindings } from './hospital.bindings';
-import { Allergic } from '../allergic/allergic.entity';
 
 @Injectable()
 export class HospitalService {
