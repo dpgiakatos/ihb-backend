@@ -72,4 +72,16 @@ export class DoctorService {
         }
         return false;
     }
+
+    async getUserAlerts(claims: Claims) {
+        return await this.alertRepository.createQueryBuilder( 'a')
+            .select('a.accessTime', 'accessTime')
+            .addSelect('p.firstName', 'firstName')
+            .addSelect('p.lastName', 'lastName')
+            .innerJoin('user', 'u', 'a.doctor=u.id')
+            .innerJoin('personal', 'p', 'u.id = p.user')
+            .where('a.patient = :patientId', { patientId: claims.id })
+            .orderBy('a.accessTime')
+            .getRawMany();
+    }
 }

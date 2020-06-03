@@ -13,6 +13,7 @@ import { ModuleRef, APP_INTERCEPTOR } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import Configuration from './config/configuration';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import Configuration from './config/configuration';
       isGlobal: true
     }),
     DoctorModule,
-    UsersModule
+    UsersModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [
