@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
 import { UpdateExtraVaccinationBindingModel, AddExtraVaccinationBindingModel } from './extra-vaccinations.bindings';
 
+import { GetPaginationQuery } from '../../helpers/pagination-query';
+
 @Injectable()
 export class ExtraVaccinationsService { 
     constructor(
@@ -15,11 +17,11 @@ export class ExtraVaccinationsService {
     ) { }
 
     async findExtraVaccinations(userId: string, page: number) {
+
+
         return await this.extraVaccinationsRepository.findAndCount({
             where: { user: { id: userId } },
-            skip: (page * 10) - 10,
-            take: 10,
-            order: { id: 'ASC' }
+            ...GetPaginationQuery(page, 10)
         });
     }
 
@@ -48,7 +50,11 @@ export class ExtraVaccinationsService {
         await this.extraVaccinationsRepository.remove(existing);
     }
 
-    async getUserId(vaccineId: string): Promise<ExtraVaccination> {
-        return await this.extraVaccinationsRepository.findOne(vaccineId);
+    async getUserId(vaccineId: string): Promise<string> {
+        const userId = (await this.extraVaccinationsRepository.findOne(vaccineId))?.user.id;
+        if (!userId) {
+            throw new NotFoundException();
+        }
+        return userId;
     }
 }

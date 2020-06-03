@@ -5,7 +5,7 @@ import * as moment from 'moment';
 // eslint-disable-next-line @typescript-eslint/class-name-casing
 export class isDateOnlyString implements ValidatorConstraintInterface {
 
-    async validate(fieldValue: unknown) {
+    async validate(fieldValue: string) {
         return moment(fieldValue, 'YYYY-MM-DD', true).isValid();
     }
 

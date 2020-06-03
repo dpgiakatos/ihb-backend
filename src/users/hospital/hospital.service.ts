@@ -118,7 +118,13 @@ export class HospitalService {
         // }
     }
 
-    async getUserId(treatmentId: string): Promise<Hospital> {
-        return await this.hospitalRepository.findOne(treatmentId);
+    async getUserId(treatmentId: string): Promise<string> {
+        const userId = (await this.hospitalRepository.findOne(treatmentId))?.userId;
+
+        if(!userId) {
+            throw new NotFoundException();
+        }
+
+        return userId;
     }
 }

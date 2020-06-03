@@ -21,8 +21,8 @@ export class AuthService {
         const user = await this.usersService.findOneByEmail(email);
         await this.verifyCredentials(user, password);
         return this.generateJWT({
-            id: user.id,
-            roles: user.roles.map(role => role.role)
+            id: user!.id,
+            roles: user!.roles.map(role => role.role)
         });
     }
 
@@ -35,7 +35,7 @@ export class AuthService {
         await this.rolesRepository.save(userRole);
     }
 
-    private async verifyCredentials(user: User, password: string) {
+    private async verifyCredentials(user: User | undefined, password: string) {
         if (user && await compare(password, user.password)) {
             return;
         }

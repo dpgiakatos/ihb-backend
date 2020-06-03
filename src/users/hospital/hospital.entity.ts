@@ -4,7 +4,6 @@ import { Exclude } from 'class-transformer'
 
 @Entity()
 export class Hospital {
-    @Exclude()
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

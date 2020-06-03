@@ -18,11 +18,11 @@ export class UsersService {
         }
     }
 
-    async findOneById(id: string): Promise<User> {
+    async findOneById(id: string): Promise<User | undefined> {
         return this.usersRepository.findOne({ id });
     }
 
-    async findOneByEmail(email: string): Promise<User> {
+    async findOneByEmail(email: string): Promise<User | undefined> {
         return this.usersRepository.findOne({ email });
     }
 

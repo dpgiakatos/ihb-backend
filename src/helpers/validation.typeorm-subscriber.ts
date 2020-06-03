@@ -13,7 +13,6 @@ export class OnValidationSubscriber implements EntitySubscriberInterface<unknown
   }
 
   private async validate<T>(entity: T) {
-    console.log(entity);
     if (!entity) {
       return true;
     }

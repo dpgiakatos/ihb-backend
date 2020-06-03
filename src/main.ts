@@ -20,6 +20,6 @@ async function bootstrap() {
 
   app.use(morgan('dev'));
 
-  await app.listen(app.get(ConfigService).get<number>('port'));
+  await app.listen(app.get(ConfigService).get<number>('port') || 3000);
 }
 bootstrap();

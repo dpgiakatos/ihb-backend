@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vaccine } from './vaccine.entity';
 import { In, Repository } from 'typeorm';
@@ -22,6 +22,11 @@ export class VaccinationsService {
 
     async getUserVaccinations(userId: string): Promise<Vaccine[]> {
         const user = await this.usersRepository.findOne(userId, { relations: ['vaccinations'] });
+        
+        if(!user) {
+            throw new NotFoundException();
+        }
+
         return user.vaccinations;
     }
 
@@ -30,6 +35,11 @@ export class VaccinationsService {
             id: In(Object.keys(updatedVaccines).filter(vaccineId => updatedVaccines[vaccineId])) 
         } });
         const user = await this.usersService.findOneById(userId);
+
+        if(!user) {
+            throw new NotFoundException();
+        }
+        
         user.vaccinations = vaccinations;
         await this.usersRepository.save(user);
     }

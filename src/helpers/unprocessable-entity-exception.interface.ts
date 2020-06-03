@@ -23,10 +23,10 @@ export class UnprocessableEntityException extends NativeException {
         errors.forEach(error => {
   
           const constraints: UnprocessableEntitySchema['failingConstraints']['any'] = [];
-          Object.keys(error.constraints).forEach(constraint => {
+          Object.keys(error.constraints ?? []).forEach(constraint => {
             constraints.push({
               constraint,
-              message: error.constraints[constraint]
+              message: error.constraints![constraint]
             });
           });
   

@@ -22,7 +22,7 @@ export class isUnique implements ValidatorConstraintInterface {
         if (!primaryKey) {
             throw new Error('Unable to validate IsUnique without a primary key');
         }
-        const repo = this.moduleRef.get((getRepositoryToken(args.object.constructor)), { strict: false }) as Repository<unknown>;
+        const repo = this.moduleRef.get((getRepositoryToken(args.object.constructor)), { strict: false }) as Repository<ObjectLiteral>;
         const result = await repo.findOne({ where: { [args.property]: fieldValue } }) as ObjectLiteral;
 
         if (identifier && result && result[primaryKey] === identifier) {

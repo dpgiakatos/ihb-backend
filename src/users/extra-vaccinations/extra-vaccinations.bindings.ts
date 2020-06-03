@@ -15,13 +15,13 @@ export class AddExtraVaccinationBindingModel {
 export class UpdateExtraVaccinationBindingModel {
     @IsString()
     @IsOptional()
-    name: string;
+    name?: string;
 
     @IsDateOnlyString()
     @IsOptional()
-    date: string;
+    date?: string;
 
     @IsString()
     @IsOptional()
-    description: string;
+    description?: string;
 }

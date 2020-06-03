@@ -14,7 +14,7 @@ export class DoctorService {
         private alertRepository: Repository<Alert>
     ) {}
 
-    async find(search: string, country: string, claims: Claims) {
+    async find(search: string, country: string | undefined, claims: Claims) {
         if (search === '') {
             return [];
         }

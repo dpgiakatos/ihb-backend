@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, ForbiddenException } from '@nestjs/common';
 import { AllergicService } from './allergic.service';
 import { Allergic } from './allergic.entity';
 import { User } from '../../auth/decorators/user.decorator';
@@ -34,11 +34,12 @@ export class AllergicController {
       @Query('page') page: 1,
       @User() claims: Claims
     ): Promise<{ allergics:Allergic[]; count: number; }> {
-      if (await this.doctorService.hasAccess(id, claims)) {
-        await this.userService.assertExists(id);
-        const [allergics, count] = await this.allergicService.findAllAllergic(id, page);
-        return {allergics, count};
+      if (!(await this.doctorService.hasAccess(id, claims))) {
+        throw new ForbiddenException();
       }
+      await this.userService.assertExists(id);
+      const [allergics, count] = await this.allergicService.findAllAllergic(id, page);
+      return { allergics, count };
   }
 
   @Post(':userId/allergic')
@@ -48,10 +49,11 @@ export class AllergicController {
     @Body() allergic: AllergicBindings,
     @User() claims: Claims
   ): Promise<Allergic> {
-    if (await this.doctorService.hasAccess(id, claims)) {
-      await this.userService.assertExists(id);
-      return await this.allergicService.addAllergy(allergic, id);
+    if (!(await this.doctorService.hasAccess(id, claims))) {
+      throw new ForbiddenException();
     }
+    await this.userService.assertExists(id);
+    return await this.allergicService.addAllergy(allergic, id);
   }
 
 
@@ -61,10 +63,11 @@ export class AllergicController {
       @Param('allergicId') allergicId: string,
       @User() claims: Claims
   ): Promise<void> {
-    const allergic = await this.allergicService.getUserId(allergicId);
-    if (await this.doctorService.hasAccess(allergic.user.id, claims)) {
-      await this.allergicService.deleteAllergic(allergicId);
+    const userId = await this.allergicService.getUserId(allergicId);
+    if (!(await this.doctorService.hasAccess(userId, claims))) {
+      throw new ForbiddenException();
     }
+    await this.allergicService.deleteAllergic(allergicId);
   }
 
     @Put('allergic/:allergicId')
@@ -73,10 +76,11 @@ export class AllergicController {
         @Param('allergicId') allergicId: string,
         @Body() allergic: Allergic,
         @User() claims: Claims
-    ) {
-      const getAllergic = await this.allergicService.getUserId(allergicId);
-      if (await this.doctorService.hasAccess(getAllergic.user.id, claims)) {
-        return await this.allergicService.editAllergic(allergicId, allergic);
+    ): Promise<Allergic> {
+      const userId = await this.allergicService.getUserId(allergicId);
+      if (!(await this.doctorService.hasAccess(userId, claims))) {
+        throw new ForbiddenException();
       }
+      return await this.allergicService.editAllergic(allergicId, allergic);
     }
 }

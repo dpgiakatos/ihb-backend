@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Put, Param } from '@nestjs/common';
+import { Controller, Body, Get, Put, Param, ForbiddenException } from '@nestjs/common';
 import { PersonalService } from './personal.service';
 import { Personal } from './personal.entity';
 import { User } from '../../auth/decorators/user.decorator';
@@ -29,8 +29,9 @@ export class PersonalController {
   @Get(':userId/personal-information')
   @Roles(Role.Doctor)
   async getSpecificPersonal(@Param('userId') userId: string, @User() claims:Claims): Promise<Personal> {
-    if (await this.doctorService.hasAccess(userId, claims)) {
-      return await this.personalService.findByUser(userId);
+    if (!(await this.doctorService.hasAccess(userId, claims))) {
+      throw new ForbiddenException();
     }
+    return await this.personalService.findByUser(userId);
   }
 }

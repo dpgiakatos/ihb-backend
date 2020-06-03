@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, ForbiddenException } from '@nestjs/common';
 import { HospitalService } from './hospital.service';
 import { Hospital } from './hospital.entity';
 import { User } from '../../auth/decorators/user.decorator';
@@ -36,12 +36,13 @@ export class HospitalController {
         @User() claims: Claims
     // ): Promise<{ hospitals: Hospital[]; count: number }> {
     ): Promise<Hospital[]> {
-        if (await this.doctorService.hasAccess(id, claims)) {
-            await this.userService.assertExists(id);
-            const [hospitals, count] = await this.hospitalService.findHospitalTreatments(id, page);
-            // return { hospitals, count };
-            return hospitals;
+        if (! (await this.doctorService.hasAccess(id, claims))) {
+            throw new ForbiddenException();
         }
+        await this.userService.assertExists(id);
+        const [hospitals, count] = await this.hospitalService.findHospitalTreatments(id, page);
+        // return { hospitals, count };
+        return hospitals;
     }
 
     @Post(':userId/hospital-treatments')
@@ -51,10 +52,11 @@ export class HospitalController {
         @Body() hospital: HospitalBindings,
         @User() claims: Claims
     ): Promise<Hospital>{
-        if (await this.doctorService.hasAccess(id, claims)) {
-            await this.userService.assertExists(id);
-            return await this.hospitalService.addHospitalTreatment(hospital, id);
+        if (!(await this.doctorService.hasAccess(id, claims))) {
+            throw new ForbiddenException();
         }
+        await this.userService.assertExists(id);
+        return await this.hospitalService.addHospitalTreatment(hospital, id);
     }
 
     @Put('hospitals/:hospitalTreatmentId')
@@ -63,11 +65,12 @@ export class HospitalController {
         @Param('hospitalTreatmentId') treatmentId: string,
         @Body() hospital: HospitalBindings,
         @User() claims: Claims
-    ){
-        const treatment = await this.hospitalService.getUserId(treatmentId);
-        if (await this.doctorService.hasAccess(treatment.user.id, claims)) {
-            return await this.hospitalService.editHospitalTreatments(treatmentId, hospital);
+    ): Promise<Hospital> {
+        const userId = await this.hospitalService.getUserId(treatmentId);
+        if (!(await this.doctorService.hasAccess(userId, claims))) {
+            throw new ForbiddenException();
         }
+        return await this.hospitalService.editHospitalTreatments(treatmentId, hospital);
     }
 
     @Delete('hospitals/:hospitalTreatmentId')
@@ -75,10 +78,11 @@ export class HospitalController {
     async deleteHospitalTreatments(
         @Param('hospitalTreatmentId') treatmentId: string,
         @User() claims: Claims
-    ): Promise<void>{
-        const treatment = await this.hospitalService.getUserId(treatmentId);
-        if (await this.doctorService.hasAccess(treatment.user.id, claims)) {
-            await this.hospitalService.deleteHospitalTreatments(treatmentId);
+    ): Promise<void> {
+        const userId = await this.hospitalService.getUserId(treatmentId);
+        if (!(await this.doctorService.hasAccess(userId, claims))) {
+            throw new ForbiddenException();
         }
+        await this.hospitalService.deleteHospitalTreatments(treatmentId);
     }
  }

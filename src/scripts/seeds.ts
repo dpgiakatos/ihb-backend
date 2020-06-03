@@ -39,20 +39,23 @@ async function bootstrap() {
         motherLastName: 'MotherLname',
         mobilePhone: '6912345678',
         emergencyContact: '6987654321'
-    },
-        user.id);
+    }, user.id);
+
+    await personalService.create({
+        firstName: 'Doctor',
+        lastName: 'Last',
+    }, doctor.id);
+
     await allergicService.addAllergy({
         name: 'Milk Allergy',
         dDescription: 'a',
         tDescription: 'a'
-    },
-        user.id);
+    }, user.id);
     await allergicService.addAllergy({
         name: 'Egg Allergy',
         dDescription: 'a',
         tDescription: 'a'
-    },
-        user.id);
+    }, user.id);
     await hospitalService.addHospitalTreatment({
         name: 'Ippokrateion',
         city: 'Thessaloniki',
@@ -61,8 +64,7 @@ async function bootstrap() {
         treatment: 'a',
         starts: '2020-01-01',
         finishes: '2020-01-04'
-    },
-        user.id);
+    }, user.id);
     await hospitalService.addHospitalTreatment({
         name: 'AHEPA',
         city: 'Thessaloniki',
@@ -71,8 +73,7 @@ async function bootstrap() {
         treatment: 'a',
         starts: '2020-05-01',
         finishes: '2020-05-20'
-    },
-        user.id);
+    }, user.id);
 
     await vaccinesRepo.insert([
         vaccinesRepo.create({ name: 'Tuberculosis' }),
