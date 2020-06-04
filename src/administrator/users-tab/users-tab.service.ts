@@ -36,4 +36,8 @@ export class UsersTabService {
     async searchUsersWithRoleDoctorAndAdministrator(search: string, page: number) {
         return await this.personalService.searchUsersWithRoleDoctorAndAdministrator(search, page);
     }
+
+    async getUser(userId: string) {
+        return await this.personalService.getSelectedUser(userId);
+    }
 }

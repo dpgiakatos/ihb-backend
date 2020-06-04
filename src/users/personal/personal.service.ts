@@ -77,17 +77,17 @@ export class PersonalService {
 
     async findAllUsers(page: number) {
         return await this.personalRepository.findAndCount({
-            select: ['firstName', 'lastName'],
-            order: { lastName: 'ASC' },
+            select: ['firstName', 'lastName', 'userId'],
             ...GetPaginationQuery(page, 10)
         });
     }
 
     async findAllDoctors(page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'r', 'u.id = r.user')
             .where('r.role = :doctor', { doctor: 'Doctor' })
             .skip((page*10)-10)
@@ -99,9 +99,10 @@ export class PersonalService {
 
     async findAllAdministrators(page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'r', 'u.id = r.user')
             .where('r.role = :administrator', { administrator: 'Administrator' })
             .skip((page*10)-10)
@@ -112,9 +113,10 @@ export class PersonalService {
 
     async findUsersWithRoleDoctorAndAdministrator(page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'rD', 'u.id = rD.user and rD.role = :doctor', { doctor: 'Doctor' })
             .innerJoin('role', 'rA', 'u.id = rA.user and rA.role = :administrator', { administrator: 'Administrator' })
             .skip((page*10)-10)
@@ -127,6 +129,7 @@ export class PersonalService {
     async searchAllUsers(search: string, page: number) {
         return await this.personalRepository.findAndCount({
             select: [
+                'userId',
                 'firstName',
                 'lastName'
             ],
@@ -140,9 +143,10 @@ export class PersonalService {
 
     async searchAllDoctors(search: string, page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'r', 'u.id = r.user')
             .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
             .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
@@ -156,9 +160,10 @@ export class PersonalService {
 
     async searchAllAdministrators(search: string, page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'r', 'u.id = r.user')
             .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
             .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
@@ -171,9 +176,10 @@ export class PersonalService {
 
     async searchUsersWithRoleDoctorAndAdministrator(search: string, page: number) {
         return await this.personalRepository.createQueryBuilder( 'p')
-            .select('p.firstName', 'firstName')
+            .select('p.userId', 'id')
+            .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')
-            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('user', 'u', 'p.userId=u.id')
             .innerJoin('role', 'rD', 'u.id = rD.user and rD.role = :doctor', { doctor: 'Doctor' })
             .innerJoin('role', 'rA', 'u.id = rA.user and rA.role = :administrator', { administrator: 'Administrator' })
             .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
@@ -183,5 +189,15 @@ export class PersonalService {
             .orderBy('p.lastName')
             .distinct(true)
             .getRawMany()
+    }
+
+    async getSelectedUser(userId: string) {
+        return await this.personalRepository.createQueryBuilder('p')
+            .select('p.firstName', 'firstName')
+            .addSelect('p.lastName', 'lastName')
+            .addSelect('u.email', 'email')
+            .innerJoin('user', 'u', 'p.userId=u.id')
+            .where('p.userId = :id', { id: userId })
+            .getRawOne();
     }
 }
