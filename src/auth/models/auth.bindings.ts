@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsUUID, Length } from 'class-validator';
 
 export class LoginBindingModel {
     @IsString()
@@ -20,4 +20,20 @@ export class RegisterBindingModel {
 
     @IsString()
     lastName: string;
+}
+
+export class ForgotPasswordModel {
+    @IsEmail()
+    email: string;
+}
+
+export class UserIdModel {
+    // @IsUUID()
+    userId: string;
+}
+
+export class TokenModel {
+    // @IsString()
+    // @Length(10)
+    token: string;
 }

@@ -11,6 +11,7 @@ import { Role } from './models/role.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { AuthGuard } from './guards/auth.guard';
+import { Token } from './models/tokens.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { AuthGuard } from './guards/auth.guard';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' }
     }),
-    TypeOrmModule.forFeature([Role])
+    TypeOrmModule.forFeature([Role]),
+    TypeOrmModule.forFeature([Token])
   ],
   providers: [
     AuthService,

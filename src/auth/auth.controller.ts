@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from './decorators/user.decorator';
-import { LoginBindingModel, RegisterBindingModel } from './models/auth.bindings';
+import { LoginBindingModel, RegisterBindingModel, ForgotPasswordModel, TokenModel, UserIdModel } from './models/auth.bindings';
 import { Claims, Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
@@ -41,6 +41,28 @@ export class AuthController {
             },
             subject: 'Welcome to IHB. Verify your email!'
         });
+    }
+
+    @Post('forgot-password')
+    async forgotPassword(
+        @Body() userEmail: ForgotPasswordModel
+    ): Promise<void> {
+        const email = userEmail.email;
+        this.authService.generateForgotPasswordToken(email);
+    }
+
+    @Get('forgot-password/:userId/:token')
+    async checkToken(
+        @Param() params: string[],
+    ): Promise<void> {
+        const id = pararms[0];
+        const tok = token.token;
+        console.log(id);
+        
+        console.log(tok);
+        
+        this.authService.checkValidityOfToken(id, tok);
+
     }
 
     @Get('profile')
