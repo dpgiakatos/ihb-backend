@@ -12,9 +12,14 @@ export class ContactController {
     ) {}
 
     @Get(':page')
-    async getContact(@Param('page', ParseIntPipe) page: number): Promise<{ contacts: Contact[]; count: number; }> {
+    async getContactsList(@Param('page', ParseIntPipe) page: number): Promise<{ contacts: Contact[]; count: number; }> {
         const [contacts, count] = await this.contactService.findAllContact(page);
         return {contacts, count};
+    }
+
+    @Get('new/:id')
+    async getContact(@Param('id', ParseIntPipe) id: number): Promise<{ contacts: Contact; }> {
+        return await this.contactService.findContact(id);
     }
 
     @Post()
