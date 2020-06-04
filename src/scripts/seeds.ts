@@ -26,6 +26,8 @@ async function bootstrap() {
     await authService.setUserRole(user, Role.User);
     const doctor = await userService.create('doctor@doctor.com', 'test');
     await authService.setUserRole(doctor, Role.Doctor);
+    const admin = await userService.create('admin@admin.com', 'test');
+    await authService.setUserRole(admin, Role.Administrator);
 
     await personalService.create({
         firstName: 'First',
@@ -45,6 +47,11 @@ async function bootstrap() {
         firstName: 'Doctor',
         lastName: 'Last',
     }, doctor.id);
+
+    await personalService.create({
+        firstName: 'Admin',
+        lastName: 'Last',
+    }, admin.id);
 
     await allergicService.addAllergy({
         name: 'Milk Allergy',
