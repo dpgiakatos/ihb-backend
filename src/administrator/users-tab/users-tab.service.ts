@@ -20,4 +20,20 @@ export class UsersTabService {
     async getUsersWithRoleDoctorAndAdministrator(page: number) {
         return await this.personalService.findUsersWithRoleDoctorAndAdministrator(page);
     }
+
+    async searchAllUsers(search: string, page: number) {
+        return await this.personalService.searchAllUsers(search, page);
+    }
+
+    async searchAllDoctors(search: string, page: number) {
+        return await this.personalService.searchAllDoctors(search, page);
+    }
+
+    async searchAllAdministrators(search: string, page: number) {
+        return await this.personalService.searchAllAdministrators(search, page);
+    }
+
+    async searchUsersWithRoleDoctorAndAdministrator(search: string, page: number) {
+        return await this.personalService.searchUsersWithRoleDoctorAndAdministrator(search, page);
+    }
 }
