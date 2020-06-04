@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { User } from '../user.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ExtraVaccination {
@@ -15,6 +16,11 @@ export class ExtraVaccination {
     @Column()
     description: string;
 
+    @Column()
+    userId: string;
+
+    @Exclude()
     @ManyToOne(() => User, user => user.extraVaccinations)
-    user: User;
+    @JoinColumn()
+    user?: User;
 }

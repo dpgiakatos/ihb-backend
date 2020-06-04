@@ -19,6 +19,9 @@ import { NotificationsModule } from './notifications/notifications.module';
   imports: [
     AuthModule,
     TypeOrmModule.forRoot({
+      keepConnectionAlive: true,
+      connectTimeout: 9999999,
+      acquireTimeout: 9999999,
       autoLoadEntities: true,
       type: 'mysql',
       host: 'localhost',
@@ -28,7 +31,10 @@ import { NotificationsModule } from './notifications/notifications.module';
       database: 'ihb',
       subscribers: [OnValidationSubscriber],
       synchronize: true,
-      logging: true
+      logging: true,
+      extra: {
+        connectionLimit: 1
+      }
     }),
     MailerModule.forRoot({
       transport: { jsonTransport: true },

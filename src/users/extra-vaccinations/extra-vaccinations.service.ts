@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ExtraVaccination } from './extra-vaccination.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../user.entity';
 import { UpdateExtraVaccinationBindingModel, AddExtraVaccinationBindingModel } from './extra-vaccinations.bindings';
 
 import { GetPaginationQuery } from '../../helpers/pagination-query';
@@ -11,14 +10,10 @@ import { GetPaginationQuery } from '../../helpers/pagination-query';
 export class ExtraVaccinationsService { 
     constructor(
         @InjectRepository(ExtraVaccination)
-        private extraVaccinationsRepository: Repository<ExtraVaccination>,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>
+        private extraVaccinationsRepository: Repository<ExtraVaccination>
     ) { }
 
     async findExtraVaccinations(userId: string, page: number) {
-
-
         return await this.extraVaccinationsRepository.findAndCount({
             where: { user: { id: userId } },
             ...GetPaginationQuery(page, 10)
@@ -51,7 +46,7 @@ export class ExtraVaccinationsService {
     }
 
     async getUserId(vaccineId: string): Promise<string> {
-        const userId = (await this.extraVaccinationsRepository.findOne(vaccineId))?.user.id;
+        const userId = (await this.extraVaccinationsRepository.findOne(vaccineId))?.userId;
         if (!userId) {
             throw new NotFoundException();
         }

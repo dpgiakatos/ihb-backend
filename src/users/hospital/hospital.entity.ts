@@ -34,6 +34,6 @@ export class Hospital {
     @Exclude()
     @ManyToOne(() => User)
     @JoinColumn()
-    user: User;
+    user?: User;
 
 }

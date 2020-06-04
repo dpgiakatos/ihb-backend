@@ -27,7 +27,7 @@ export class VaccinationsService {
             throw new NotFoundException();
         }
 
-        return user.vaccinations;
+        return user.vaccinations!;
     }
 
     async editVaccinations(updatedVaccines: { [key: string]: boolean }, userId: string) {

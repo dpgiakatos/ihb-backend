@@ -4,6 +4,7 @@ import { Like, Not, Repository } from 'typeorm';
 import { Claims, Role } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
 import { PersonalService } from '../users/personal/personal.service';
+import { GetPaginationQuery } from '../helpers/pagination-query';
 import { AlertLog } from './doctor.bindings';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class DoctorService {
         private alertRepository: Repository<Alert>
     ) {}
 
-    async find(search: string, country: string | undefined, claims: Claims) {
+    async find(search: string, country: string | undefined, claims: Claims, page: number) {
         if (search === '') {
             return [];
         }
@@ -31,7 +32,8 @@ export class DoctorService {
                     { firstName: Like('%' + search + '%'), userId: Not(claims.id) },
                     { lastName: Like('%' + search + '%'), userId: Not(claims.id) },
                     { ssnvs: Like('%' + search + '%'), userId: Not(claims.id) }
-                ]
+                ],
+                ...GetPaginationQuery(page, 10)
             });
         } else {
             return await this.personalService.getRepository().find({
@@ -45,7 +47,8 @@ export class DoctorService {
                     { firstName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
                     { lastName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
                     { ssnvs: Like('%' + search + '%'), country: country, userId: Not(claims.id) }
-                ]
+                ],
+                ...GetPaginationQuery(page, 10)
             });
         }
     }

@@ -13,8 +13,13 @@ export class DoctorController {
 
     @Get('find')
     @Roles(Role.Doctor)
-    async find(@Query('search') search: string, @Query('country') country: string | undefined, @User() claims: Claims) {
-        return await this.doctorService.find(search, country, claims);
+    async find(
+        @Query('search') search: string,
+        @Query('country') country: string | undefined,
+        @Query('page') page = 1,
+        @User() claims: Claims
+    ) {
+        return await this.doctorService.find(search, country, claims, page);
     }
 
     @Get(':userId/access')

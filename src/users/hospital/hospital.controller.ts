@@ -23,9 +23,9 @@ export class HospitalController {
     async getUserTreatments(
         @User() user: Claims,
         @Query('page') page = 1
-    ): Promise<{ hospitals: Hospital[]; count: number; }> {
-        const [hospitals, count] = await this.hospitalService.findHospitalTreatments(user.id, page);
-        return { hospitals, count };
+    ): Promise<{ treatments: Hospital[]; count: number; }> {
+        const [treatments, count] = await this.hospitalService.findHospitalTreatments(user.id, page);
+        return { treatments, count };
     }
 
     @Get(':userId/hospital-treatments')
@@ -34,15 +34,13 @@ export class HospitalController {
         @Param('userId') id: string, 
         @Query('page') page: 1,
         @User() claims: Claims
-    // ): Promise<{ hospitals: Hospital[]; count: number }> {
-    ): Promise<Hospital[]> {
+    ): Promise<{ treatments: Hospital[]; count: number }> {
         if (! (await this.doctorService.hasAccess(id, claims))) {
             throw new ForbiddenException();
         }
         await this.userService.assertExists(id);
-        const [hospitals, count] = await this.hospitalService.findHospitalTreatments(id, page);
-        // return { hospitals, count };
-        return hospitals;
+        const [treatments, count] = await this.hospitalService.findHospitalTreatments(id, page);
+        return { treatments, count };
     }
 
     @Post(':userId/hospital-treatments')
@@ -59,7 +57,7 @@ export class HospitalController {
         return await this.hospitalService.addHospitalTreatment(hospital, id);
     }
 
-    @Put('hospitals/:hospitalTreatmentId')
+    @Put('hospital-treatment/:hospitalTreatmentId')
     @Roles(Role.Doctor)
     async editHospitalTreatments(
         @Param('hospitalTreatmentId') treatmentId: string,
@@ -73,7 +71,7 @@ export class HospitalController {
         return await this.hospitalService.editHospitalTreatments(treatmentId, hospital);
     }
 
-    @Delete('hospitals/:hospitalTreatmentId')
+    @Delete('hospital-treatment/:hospitalTreatmentId')
     @Roles(Role.Doctor)
     async deleteHospitalTreatments(
         @Param('hospitalTreatmentId') treatmentId: string,

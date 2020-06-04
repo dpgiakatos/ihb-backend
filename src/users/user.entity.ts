@@ -26,21 +26,21 @@ export class User {
     roles: Role[];
 
     @OneToMany(() => ExtraVaccination, extraVaccination => extraVaccination.user)
-    extraVaccinations: ExtraVaccination[];
+    extraVaccinations?: ExtraVaccination[];
 
     @ManyToMany(() => Vaccine)
     @JoinTable()
-    vaccinations: Vaccine[];
+    vaccinations?: Vaccine[];
     
     @OneToMany(() => Allergic, allergic => allergic.user)
-    allergic: Allergic[];
+    allergic?: Allergic[];
 
     @OneToMany(() => Hospital, hospital => hospital.user)
-    hospital: Hospital[];
+    hospital?: Hospital[];
 
     @OneToMany(() => Alert, alert => alert.patient)
-    patient: Alert[];
+    patient?: Alert[];
 
     @OneToMany(() => Alert, alert => alert.doctor)
-    doctor: Alert[];
+    doctor?: Alert[];
 }

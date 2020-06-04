@@ -12,10 +12,10 @@ export class Allergic {
     name: string;
 
     @Column()
-    dDescription: string;
+    diseaseDescription: string;
 
     @Column()
-    tDescription: string;
+    treatmentDescription: string;
 
     @Column()
     userId: string;
@@ -23,5 +23,5 @@ export class Allergic {
     @Exclude()
     @ManyToOne(() => User)
     @JoinColumn()
-    user: User;
+    user?: User;
 }

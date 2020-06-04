@@ -51,5 +51,5 @@ export class Personal {
     @IsUnique<Personal>(o => o.id, { message: 'Personal information already exists. Please use Put method to edit' })
     @OneToOne(() => User)
     @JoinColumn()
-    user: User;
+    user?: User;
 }

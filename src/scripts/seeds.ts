@@ -43,6 +43,33 @@ async function bootstrap() {
         emergencyContact: '6987654321'
     }, user.id);
 
+
+    // const processes = [];
+
+    // for(let i = 0; i < 50; i++) {
+    //     processes.push((async () => {
+    //         const user = await userService.create('user@user.com' + i, 'test');
+    //         await authService.setUserRole(user, Role.User);
+    //         await personalService.create({
+    //             firstName: 'First' + i,
+    //             lastName: 'Last' + i,
+    //             ssnvs: '01234567890' + i,
+    //             birthDate: '1950-01-01',
+    //             country: 'Greece',
+    //             fatherFirstName: 'FatherFname',
+    //             fatherLastName: 'FatherLname',
+    //             motherFirstName: 'MotherFname',
+    //             motherLastName: 'MotherLname',
+    //             mobilePhone: '6912345678',
+    //             emergencyContact: '6987654321'
+    //         }, user.id);
+    //         return true;
+    //     })());
+    // }
+    console.log('scheduling complete');
+    // await Promise.all(processes);
+    console.log('finished');
+
     await personalService.create({
         firstName: 'Doctor',
         lastName: 'Last',
@@ -55,13 +82,13 @@ async function bootstrap() {
 
     await allergicService.addAllergy({
         name: 'Milk Allergy',
-        dDescription: 'a',
-        tDescription: 'a'
+        diseaseDescription: 'a',
+        treatmentDescription: 'a'
     }, user.id);
     await allergicService.addAllergy({
         name: 'Egg Allergy',
-        dDescription: 'a',
-        tDescription: 'a'
+        diseaseDescription: 'a',
+        treatmentDescription: 'a'
     }, user.id);
     await hospitalService.addHospitalTreatment({
         name: 'Ippokrateion',
@@ -103,7 +130,11 @@ async function bootstrap() {
         vaccinesRepo.create({ name: 'Hepatitis A' })
     ]);
 
+    console.log('went here');
+
     await app.close();
+
+    console.log('got out');
 }
 bootstrap().catch(err => {
     console.error(err);
