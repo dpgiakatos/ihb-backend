@@ -14,14 +14,12 @@ import { useContainer } from 'class-validator';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import Configuration from './config/configuration';
 import { NotificationsModule } from './notifications/notifications.module';
+import { AdministratorModule } from './administrator/administrator.module';
 
 @Module({
   imports: [
     AuthModule,
     TypeOrmModule.forRoot({
-      keepConnectionAlive: true,
-      connectTimeout: 9999999,
-      acquireTimeout: 9999999,
       autoLoadEntities: true,
       type: 'mysql',
       host: 'localhost',
@@ -31,10 +29,7 @@ import { NotificationsModule } from './notifications/notifications.module';
       database: 'ihb',
       subscribers: [OnValidationSubscriber],
       synchronize: true,
-      logging: true,
-      extra: {
-        connectionLimit: 1
-      }
+      logging: true
     }),
     MailerModule.forRoot({
       transport: { jsonTransport: true },
@@ -51,7 +46,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     }),
     DoctorModule,
     UsersModule,
-    NotificationsModule
+    NotificationsModule,
+    AdministratorModule
   ],
   controllers: [AppController],
   providers: [

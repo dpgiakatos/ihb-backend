@@ -1,8 +1,10 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Personal } from './personal.entity';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, Like, Not } from 'typeorm';
 import { CreatePersonalBindings } from './personal.bindings';
+import { GetPaginationQuery } from '../../helpers/pagination-query';
+import { Claims } from '../../auth/models/claims.interface';
 
 @Injectable()
 export class PersonalService {
@@ -39,7 +41,86 @@ export class PersonalService {
         await this.personalRepository.save(existing);
     }
 
-    getRepository(): Repository<Personal> {
-        return this.personalRepository;
+    async patientSearchingWithoutFilters(search: string, claims: Claims, page: number) {
+        return await this.personalRepository.find({
+            select: [
+                'firstName',
+                'lastName',
+                'ssnvs',
+                'userId'
+            ],
+            where: [
+                { firstName: Like('%' + search + '%'), userId: Not(claims.id) },
+                { lastName: Like('%' + search + '%'), userId: Not(claims.id) },
+                { ssnvs: Like('%' + search + '%'), userId: Not(claims.id) }
+            ],
+            ...GetPaginationQuery(page, 10)
+        });
+    }
+
+    async patientSearchingWithFilters(search: string, country: string | undefined, claims: Claims, page: number) {
+        return await this.personalRepository.find({
+            select: [
+                'firstName',
+                'lastName',
+                'ssnvs',
+                'userId'
+            ],
+            where: [
+                { firstName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
+                { lastName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
+                { ssnvs: Like('%' + search + '%'), country: country, userId: Not(claims.id) }
+            ],
+            ...GetPaginationQuery(page, 10)
+        });
+    }
+
+    async findAllUsers(page: number) {
+        return await this.personalRepository.findAndCount({
+            select: ['firstName', 'lastName'],
+            ...GetPaginationQuery(page, 10)
+        });
+    }
+
+    async findAllDoctors(page: number) {
+        return await this.personalRepository.createQueryBuilder( 'p')
+            .select('p.id', 'id')
+            .addSelect('p.firstName', 'firstName')
+            .addSelect('p.lastName', 'lastName')
+            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('role', 'r', 'u.id = r.user')
+            .where('r.role = :doctor', { doctor: 'Doctor' })
+            .skip((page*10)-10)
+            .take(10)
+            .orderBy('p.lastName')
+            .distinct(true)
+            .getRawMany();
+    }
+
+    async findAllAdministrators(page: number) {
+        return await this.personalRepository.createQueryBuilder( 'p')
+            .select('p.firstName', 'firstName')
+            .addSelect('p.lastName', 'lastName')
+            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('role', 'r', 'u.id = r.user')
+            .where('r.role = :administrator', { administrator: 'Administrator' })
+            .skip((page*10)-10)
+            .take(10)
+            .orderBy('p.lastName')
+            .getRawMany();
+    }
+
+    async findUsersWithRoleDoctorAndAdministrator(page: number) {
+        return await this.personalRepository.createQueryBuilder( 'p')
+            .select('p.firstName', 'firstName')
+            .addSelect('p.lastName', 'lastName')
+            .innerJoin('user', 'u', 'p.user=u.id')
+            .innerJoin('role', 'rD', 'u.id = rD.user and rD.role = :doctor', { doctor: 'Doctor' })
+            .innerJoin('role', 'rA', 'u.id = rA.user and rA.role = :administrator', { administrator: 'Administrator' })
+            .skip((page*10)-10)
+            .take(10)
+            .orderBy('p.lastName')
+            .distinct(true)
+            .getRawMany()
     }
 }

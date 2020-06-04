@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Claims, Role } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
 import { PersonalService } from '../users/personal/personal.service';
-import { GetPaginationQuery } from '../helpers/pagination-query';
 import { AlertLog } from './doctor.bindings';
 
 @Injectable()
@@ -21,35 +20,9 @@ export class DoctorService {
             return [];
         }
         if (!country) {
-            return await this.personalService.getRepository().find({
-                select: [
-                    'firstName',
-                    'lastName',
-                    'ssnvs',
-                    'userId'
-                ],
-                where: [
-                    { firstName: Like('%' + search + '%'), userId: Not(claims.id) },
-                    { lastName: Like('%' + search + '%'), userId: Not(claims.id) },
-                    { ssnvs: Like('%' + search + '%'), userId: Not(claims.id) }
-                ],
-                ...GetPaginationQuery(page, 10)
-            });
+            return await this.personalService.patientSearchingWithoutFilters(search, claims, page);
         } else {
-            return await this.personalService.getRepository().find({
-                select: [
-                    'firstName',
-                    'lastName',
-                    'ssnvs',
-                    'userId'
-                ],
-                where: [
-                    { firstName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
-                    { lastName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
-                    { ssnvs: Like('%' + search + '%'), country: country, userId: Not(claims.id) }
-                ],
-                ...GetPaginationQuery(page, 10)
-            });
+            return await this.personalService.patientSearchingWithFilters(search, country, claims, page);
         }
     }
 

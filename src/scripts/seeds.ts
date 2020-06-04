@@ -21,13 +21,16 @@ async function bootstrap() {
     const hospitalService = app.get(HospitalService);
 
     const vaccinesRepo = app.get<string, Repository<Vaccine>>(getRepositoryToken(Vaccine));
-    
+
     const user = await userService.create('user@user.com', 'test');
     await authService.setUserRole(user, Role.User);
     const doctor = await userService.create('doctor@doctor.com', 'test');
     await authService.setUserRole(doctor, Role.Doctor);
     const admin = await userService.create('admin@admin.com', 'test');
     await authService.setUserRole(admin, Role.Administrator);
+    const superUser = await userService.create('super@super.com', 'test');
+    await authService.setUserRole(superUser, Role.Doctor);
+    await authService.setUserRole(superUser, Role.Administrator);
 
     await personalService.create({
         firstName: 'First',
@@ -79,6 +82,11 @@ async function bootstrap() {
         firstName: 'Admin',
         lastName: 'Last',
     }, admin.id);
+
+    await personalService.create({
+        firstName: 'Super',
+        lastName: 'User',
+    }, superUser.id);
 
     await allergicService.addAllergy({
         name: 'Milk Allergy',
