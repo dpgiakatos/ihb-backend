@@ -2,7 +2,6 @@ import { EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent, E
 import { validate } from 'class-validator';
 import { UnprocessableEntityException } from './unprocessable-entity-exception.interface';
 import { CLS } from './cls';
-import { User } from '../users/user.entity';
 
 @EventSubscriber()
 export class OnValidationSubscriber implements EntitySubscriberInterface<unknown> {
@@ -20,7 +19,6 @@ export class OnValidationSubscriber implements EntitySubscriberInterface<unknown
     }
     const validationErrors = await CLS.runAndReturn(() => {
       CLS.set('manager', manager);
-      CLS.set('debug', (entity as unknown as User)?.email );
       return validate(entity);
     })
 

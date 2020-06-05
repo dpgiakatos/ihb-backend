@@ -1,7 +1,5 @@
 import { ValidatorConstraint, ValidatorConstraintInterface, registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
-import { ModuleRef } from '@nestjs/core';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Connection, Repository, ObjectLiteral, EntityManager } from 'typeorm';
+import { Connection, ObjectLiteral, EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CLS } from './cls';
 
@@ -19,8 +17,6 @@ export class isUnique implements ValidatorConstraintInterface {
         }
 
         const manager = CLS.get('manager') as EntityManager;
-        console.log(CLS.get('debug'));
-        console.log(fieldValue);
 
         const identifier = args.constraints[0](args.object);
 

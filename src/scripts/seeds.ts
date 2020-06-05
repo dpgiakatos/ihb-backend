@@ -69,9 +69,8 @@ async function bootstrap() {
     //         return true;
     //     })());
     // }
-    console.log('scheduling complete');
+
     // await Promise.all(processes);
-    console.log('finished');
 
     await personalService.create({
         firstName: 'Doctor',

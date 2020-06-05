@@ -48,8 +48,8 @@ import { ContactModule } from './contact/contact.module';
     DoctorModule,
     UsersModule,
     NotificationsModule,
-    AdministratorModule
-    ContactModule,
+    AdministratorModule,
+    ContactModule
   ],
   controllers: [AppController],
   providers: [
