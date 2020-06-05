@@ -123,7 +123,7 @@ export class PersonalService {
             .take(10)
             .orderBy('p.lastName')
             .distinct(true)
-            .getRawMany()
+            .getRawMany();
     }
 
     async searchAllUsers(search: string, page: number) {
@@ -188,7 +188,7 @@ export class PersonalService {
             .take(10)
             .orderBy('p.lastName')
             .distinct(true)
-            .getRawMany()
+            .getRawMany();
     }
 
     async getSelectedUser(userId: string) {
