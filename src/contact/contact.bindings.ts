@@ -1,6 +1,6 @@
-import { IsString, IsOptional } from "class-validator";
+import { IsString } from "class-validator";
 
-export class CreateContactBindings {
+export class ContactBindings {
     @IsString()
     email: string;
 

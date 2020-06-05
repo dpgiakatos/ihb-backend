@@ -1,10 +1,8 @@
 import { Auth } from "../auth/decorators/auth.decorator";
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, Get, Query, ParseIntPipe, Param, Delete } from "@nestjs/common";
 import { ContactService } from "./contact.service";
-import { InjectRepository } from "@nestjs/typeorm";
+import { ContactBindings } from "./contact.bindings";
 import { Contact } from "./contact.entity";
-import { Repository } from "typeorm";
-import { CreateContactBindings } from "./contact.bindings";
 
 @Auth
 @Controller('contact')
@@ -13,10 +11,24 @@ export class ContactController {
         private contactService: ContactService
     ) {}
 
+    @Get(':page')
+    async getContactsList(@Param('page', ParseIntPipe) page: number): Promise<{ contacts: Contact[]; count: number; }> {
+        const [contacts, count] = await this.contactService.findAllContact(page);
+        return {contacts, count};
+    }
+
+    @Get('message/:id')
+    async getContact(@Param('id', ParseIntPipe) id: number): Promise<{ contacts: Contact; }> {
+        return await this.contactService.findContact(id);
+    }
+
     @Post()
-    async postContact(@Body() contact: CreateContactBindings): Promise<any> {
-        console.log("Hello");
-        console.log(contact.message);
+    async postContact(@Body() contact: ContactBindings): Promise<any> {
         return await this.contactService.postContact(contact);
+    }
+
+    @Delete(':id')
+    async deleteContact(@Param('id', ParseIntPipe) id: number) {
+        await this.contactService.deleteContact(id);
     }
 }
