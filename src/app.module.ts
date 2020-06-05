@@ -15,6 +15,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import Configuration from './config/configuration';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AdministratorModule } from './administrator/administrator.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AdministratorModule } from './administrator/administrator.module';
     UsersModule,
     NotificationsModule,
     AdministratorModule
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [
