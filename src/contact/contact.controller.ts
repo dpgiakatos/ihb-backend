@@ -17,7 +17,7 @@ export class ContactController {
         return {contacts, count};
     }
 
-    @Get('new/:id')
+    @Get('message/:id')
     async getContact(@Param('id', ParseIntPipe) id: number): Promise<{ contacts: Contact; }> {
         return await this.contactService.findContact(id);
     }
@@ -29,7 +29,6 @@ export class ContactController {
 
     @Delete(':id')
     async deleteContact(@Param('id', ParseIntPipe) id: number) {
-        console.log("Hello");
         await this.contactService.deleteContact(id);
     }
 }

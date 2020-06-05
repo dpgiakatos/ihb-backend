@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Contact } from "./contact.entity";
 import { Repository } from "typeorm";
@@ -13,19 +13,15 @@ export class ContactService {
     ) {}
 
     async postContact(contact: ContactBindings) {
-        const newContact = this.contactRepository.create();
-        newContact.email = contact.email;
-        newContact.subject = contact.subject;
-        newContact.message = contact.message;
+        const newContact = this.contactRepository.create({
+            ...contact
+        });
         return await this.contactRepository.save(newContact);
     }
 
-
     async findAllContact(page: number): Promise<any> {
         return await this.contactRepository.findAndCount({
-            skip: (page * 10) - 10,
-            take: 10,
-            order: { id: 'ASC' }
+            ...GetPaginationQuery(page, 10)
         });
     }
 
@@ -34,9 +30,10 @@ export class ContactService {
     }
 
     async deleteContact(id: number) {
-        const req = await this.contactRepository.findOne({ where: { id: id }})
-            const extra = this.contactRepository.create();
-            extra.id = id;
-            await this.contactRepository.delete(extra);   
+        const existing = await this.contactRepository.findOne(id);
+        if (!existing) {
+            throw new NotFoundException();
+        }
+        await this.contactRepository.remove(existing);
     }
 }
