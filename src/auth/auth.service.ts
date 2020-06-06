@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { compare }  from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -52,9 +52,13 @@ export class AuthService {
 
     async generateForgotPasswordToken(userEmail: string): Promise<void> {
         const type = TokenEnum.forgotPassword;
-        const userId = (await this.usersService.findOneByEmail(userEmail)).id;
-        const oldToken = await this.tokenRepository.findOne({ userId });
-        if (!oldToken)
+        const existing = await this.usersService.findOneByEmail(userEmail);        
+        if(!existing) {
+            throw new NotFoundException();
+        }
+        const userId = existing.id;
+        const existingToken = await this.tokenRepository.findOne({ userId });
+        if (!existingToken)
         {
             const token = this.generateToken();
             const temp = this.tokenRepository.create({
@@ -67,9 +71,9 @@ export class AuthService {
 
             await this.tokenRepository.save(temp);
         }
-        else if (!oldToken.isActive && oldToken.tokenType == type)
+        else if (this.hasExpired(existingToken.timestamp) && existingToken.tokenType == type)
         {
-            await this.tokenRepository.remove(oldToken);
+            await this.tokenRepository.remove(existingToken);
             const token = this.generateToken();
             const temp = this.tokenRepository.create({
                 tokenType: type,
@@ -80,10 +84,11 @@ export class AuthService {
             console.log(token);
 
             await this.tokenRepository.save(temp);
-
         }
-        else{
-            console.log('user has already an active token');
+        else {  
+            console.log('exist a valid token');
+                     
+            throw new ForbiddenException();
         }
         
     }
@@ -92,10 +97,38 @@ export class AuthService {
         return randomBytes(90).toString('hex').toString();
     }
 
+    hasExpired(date: Date): boolean
+    {
+        const temp = new Date();
+        const hour = 1000 * 60 * 60; // 1 hour in milliseconds
+        if (temp.getTime() - date.getTime() < hour){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     async checkValidityOfToken(userId: string, token: string)
     {
-        const tok = await this.tokenRepository.findOne({ userId, token });
-        console.log(tok);
-        
+        const existing = await this.tokenRepository.findOne({ userId, token });
+        if (!existing){
+            throw new NotFoundException();
+        }
+        else if(this.hasExpired(existing.timestamp)) {
+            throw new ForbiddenException();
+        }
     }
+
+    async resetPassword(userId: string, newPassword: string)
+    {
+        const existing = await this.usersService.findOneById(userId);
+        if (!existing){
+            throw new NotFoundException();
+        }
+        const oldPassword = existing.password;
+        await this.usersService.editPassword(userId, oldPassword, newPassword);
+    }
+
+
 }

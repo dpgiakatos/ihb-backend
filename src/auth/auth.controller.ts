@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from './decorators/user.decorator';
-import { LoginBindingModel, RegisterBindingModel, ForgotPasswordModel, TokenModel, UserIdModel } from './models/auth.bindings';
+import { LoginBindingModel, RegisterBindingModel, ForgotPassworBindingdModel, TokenBindingModel, UserIdBindingModel, ResetPasswordBindingModel } from './models/auth.bindings';
 import { Claims, Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
@@ -45,23 +45,28 @@ export class AuthController {
 
     @Post('forgot-password')
     async forgotPassword(
-        @Body() userEmail: ForgotPasswordModel
+        @Body() userEmail: ForgotPassworBindingdModel
     ): Promise<void> {
-        const email = userEmail.email;
+        const email = userEmail.email;        
         this.authService.generateForgotPasswordToken(email);
     }
 
-    @Get('forgot-password/:userId/:token')
+    @Put('reset-password/:userId/:token')
     async checkToken(
-        @Param() params: string[],
+        @Param('userId') userId: UserIdBindingModel,   
+        @Param('token') token: TokenBindingModel,
+        @Body() resetPassword: ResetPasswordBindingModel
     ): Promise<void> {
-        const id = pararms[0];
+        const id = userId.userId;
         const tok = token.token;
         console.log(id);
         
         console.log(tok);
         
         this.authService.checkValidityOfToken(id, tok);
+
+        const password = resetPassword.password;
+        this.authService.resetPassword(id, password);
 
     }
 

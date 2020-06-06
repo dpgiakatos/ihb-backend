@@ -22,18 +22,26 @@ export class RegisterBindingModel {
     lastName: string;
 }
 
-export class ForgotPasswordModel {
+export class ForgotPassworBindingdModel {
     @IsEmail()
     email: string;
 }
 
-export class UserIdModel {
-    // @IsUUID()
+export class UserIdBindingModel {
+    @IsUUID()
     userId: string;
 }
 
-export class TokenModel {
-    // @IsString()
+export class TokenBindingModel {
+    @IsString()
     // @Length(10)
     token: string;
+}
+
+export class ResetPasswordBindingModel {
+    @IsString()
+    password: string;
+
+    @IsString()
+    newPassword: string;
 }
