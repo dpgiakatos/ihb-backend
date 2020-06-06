@@ -7,6 +7,7 @@ import { Vaccine } from './vaccinations/vaccine.entity';
 import { Allergic } from  './allergic/allergic.entity';
 import { Hospital } from './hospital/hospital.entity';
 import { Alert } from '../doctor/alert.entity';
+import { Application } from '../application/application.entity';
 
 @Entity()
 @Unique(['email'])
@@ -43,4 +44,7 @@ export class User {
 
     @OneToMany(() => Alert, alert => alert.doctor)
     doctor?: Alert[];
+
+    @OneToMany(() => Application, application => application.user)
+    applications?: Application[];
 }

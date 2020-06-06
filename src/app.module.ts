@@ -16,6 +16,7 @@ import Configuration from './config/configuration';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AdministratorModule } from './administrator/administrator.module';
 import { ContactModule } from './contact/contact.module';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { ContactModule } from './contact/contact.module';
     UsersModule,
     NotificationsModule,
     AdministratorModule,
-    ContactModule
+    ContactModule,
+    ApplicationModule
   ],
   controllers: [AppController],
   providers: [
