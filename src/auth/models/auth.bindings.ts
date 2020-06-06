@@ -27,21 +27,7 @@ export class ForgotPassworBindingdModel {
     email: string;
 }
 
-export class UserIdBindingModel {
-    @IsUUID()
-    userId: string;
-}
-
-export class TokenBindingModel {
-    @IsString()
-    // @Length(10)
-    token: string;
-}
-
 export class ResetPasswordBindingModel {
-    @IsString()
-    password: string;
-
     @IsString()
     newPassword: string;
 }

@@ -1,5 +1,4 @@
 import { Controller, Param, Body, Put } from '@nestjs/common';
-import { VaccinationsService } from './vaccinations/vaccinations.service';
 import { UsersService } from './users.service';
 import { PasswordBindings } from './password/password.bindings';
 import { Auth } from '../auth/decorators/auth.decorator';
@@ -9,9 +8,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 export class UsersController {
 
     constructor(
-        private vaccinationsService: VaccinationsService,
         private userService: UsersService
-    
     ) { }
 
     @Put(':userId/change-password')
@@ -21,7 +18,7 @@ export class UsersController {
     ): Promise<void> {
         console.log(password)
         await this.userService.assertExists(id);
-        await this.userService.editPassword(id, password.oldPassword, password.password);
+        await this.userService.changePasswordWithOldPassword(id, password.oldPassword, password.password);
     }
 }
 

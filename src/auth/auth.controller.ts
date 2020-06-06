@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from './decorators/user.decorator';
-import { LoginBindingModel, RegisterBindingModel, ForgotPassworBindingdModel, TokenBindingModel, UserIdBindingModel, ResetPasswordBindingModel } from './models/auth.bindings';
+import { LoginBindingModel, RegisterBindingModel, ForgotPassworBindingdModel, ResetPasswordBindingModel } from './models/auth.bindings';
 import { Claims, Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
@@ -48,26 +48,31 @@ export class AuthController {
         @Body() userEmail: ForgotPassworBindingdModel
     ): Promise<void> {
         const email = userEmail.email;        
-        this.authService.generateForgotPasswordToken(email);
+        const token = await this.authService.generateForgotPasswordToken(email);
+        await this.mailerService.sendMail({
+            to: email,
+            template: 'reset-password',
+            context: {
+                buttonUrl: `${this.configService.get<string>('frontendUrl')}/auth/reset-password/${token}`,
+            },
+            subject: 'Reset your password'
+        });
+
     }
 
-    @Put('reset-password/:userId/:token')
+    @Get('reset-password/:token')
     async checkToken(
-        @Param('userId') userId: UserIdBindingModel,   
-        @Param('token') token: TokenBindingModel,
+        @Param('token') token: string
+    ): Promise<void> {
+        await this.authService.checkTokenValidity(token);
+    }
+
+    @Put('reset-password/:token')
+    async changePassword(
+        @Param('token') token: string,
         @Body() resetPassword: ResetPasswordBindingModel
     ): Promise<void> {
-        const id = userId.userId;
-        const tok = token.token;
-        console.log(id);
-        
-        console.log(tok);
-        
-        this.authService.checkValidityOfToken(id, tok);
-
-        const password = resetPassword.password;
-        this.authService.resetPassword(id, password);
-
+        await this.authService.changePasswordWithToken(token, resetPassword.newPassword);
     }
 
     @Get('profile')

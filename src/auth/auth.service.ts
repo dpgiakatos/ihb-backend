@@ -50,14 +50,14 @@ export class AuthService {
         return this.jwtService.signAsync(claims);
     }
 
-    async generateForgotPasswordToken(userEmail: string): Promise<void> {
+    async generateForgotPasswordToken(userEmail: string): Promise<string> {
         const type = TokenEnum.forgotPassword;
         const existing = await this.usersService.findOneByEmail(userEmail);        
         if(!existing) {
             throw new NotFoundException();
         }
         const userId = existing.id;
-        const existingToken = await this.tokenRepository.findOne({ userId });
+        const existingToken = await this.tokenRepository.findOne({ userId, tokenType: type });
         if (!existingToken)
         {
             const token = this.generateToken();
@@ -67,11 +67,12 @@ export class AuthService {
                 token: token,
                 userId: userId
             });
-            console.log(token);
-
             await this.tokenRepository.save(temp);
+
+            return token;
+
         }
-        else if (this.hasExpired(existingToken.timestamp) && existingToken.tokenType == type)
+        else if (this.hasExpired(existingToken.timestamp))
         {
             await this.tokenRepository.remove(existingToken);
             const token = this.generateToken();
@@ -81,27 +82,32 @@ export class AuthService {
                 token: token,
                 userId: userId
             });
-            console.log(token);
-
             await this.tokenRepository.save(temp);
+
+            return token;
         }
-        else {  
-            console.log('exist a valid token');
-                     
-            throw new ForbiddenException();
+        else {               
+            return existingToken.token;
         }
         
     }
+
+    async changePasswordWithToken(token: string, newPassword: string)
+    {
+        const existingToken = await this.checkTokenValidity(token);
+        const existing = await this.usersService.findOneById(existingToken.userId);
+        await this.usersService.changePassword(existing!, newPassword);
+    }
+
 
     generateToken(): string {
         return randomBytes(90).toString('hex').toString();
     }
 
-    hasExpired(date: Date): boolean
-    {
+    hasExpired(date: Date): boolean {
         const temp = new Date();
         const hour = 1000 * 60 * 60; // 1 hour in milliseconds
-        if (temp.getTime() - date.getTime() < hour){
+        if (temp.getTime() - date.getTime() < hour) {
             return false;
         }
         else {
@@ -109,26 +115,15 @@ export class AuthService {
         }
     }
 
-    async checkValidityOfToken(userId: string, token: string)
-    {
-        const existing = await this.tokenRepository.findOne({ userId, token });
-        if (!existing){
+    async checkTokenValidity(token: string): Promise<Token> {
+        const existingToken = await this.tokenRepository.findOne({ token, tokenType: TokenEnum.forgotPassword });
+        if (!existingToken) {
             throw new NotFoundException();
         }
-        else if(this.hasExpired(existing.timestamp)) {
+        else if (this.hasExpired(existingToken.timestamp)) {
             throw new ForbiddenException();
         }
+        return existingToken;
     }
-
-    async resetPassword(userId: string, newPassword: string)
-    {
-        const existing = await this.usersService.findOneById(userId);
-        if (!existing){
-            throw new NotFoundException();
-        }
-        const oldPassword = existing.password;
-        await this.usersService.editPassword(userId, oldPassword, newPassword);
-    }
-
 
 }
