@@ -4,9 +4,10 @@ import { AdministratorService } from './administrator.service';
 import { UsersTabService } from './users-tab/users-tab.service';
 import { AdministratorController } from './administrator.controller';
 import { UsersTabController } from './users-tab/users-tab.controller';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [UsersModule],
+    imports: [UsersModule, AuthModule],
     providers: [AdministratorService, UsersTabService],
     controllers: [AdministratorController, UsersTabController]
 })

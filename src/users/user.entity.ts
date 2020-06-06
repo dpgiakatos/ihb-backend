@@ -28,7 +28,7 @@ export class User {
     @OneToMany(() => ExtraVaccination, extraVaccination => extraVaccination.user)
     extraVaccinations?: ExtraVaccination[];
 
-    @ManyToMany(() => Vaccine)
+    @ManyToMany(() => Vaccine, { onDelete: 'CASCADE' })
     @JoinTable()
     vaccinations?: Vaccine[];
     

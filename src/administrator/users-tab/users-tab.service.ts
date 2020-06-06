@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PersonalService } from '../../users/personal/personal.service';
+import { AuthService } from '../../auth/auth.service';
+import { User } from '../../users/user.entity';
+import { Role } from '../../auth/models/claims.interface';
 
 @Injectable()
 export class UsersTabService {
-    constructor(private personalService: PersonalService) { }
+    constructor(
+        private personalService: PersonalService,
+        private authService: AuthService
+    ) { }
 
     async getAllUsers(page: number) {
         return await this.personalService.findAllUsers(page);
@@ -39,5 +45,17 @@ export class UsersTabService {
 
     async getUser(userId: string) {
         return await this.personalService.getSelectedUser(userId);
+    }
+
+    async getUserRole(userId: string) {
+        return await this.authService.getUserRole(userId);
+    }
+
+    async setUserRole(user: User, role: Role) {
+        return await this.authService.setUserRole(user, role);
+    }
+
+    async deleteUserRole(user: User, role: Role) {
+        return await this.authService.deleteUserRole(user, role);
     }
 }

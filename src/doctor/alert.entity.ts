@@ -9,11 +9,11 @@ export class Alert {
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     accessTime: Date;
 
-    @ManyToOne(() => User, user => user.patient)
+    @ManyToOne(() => User, user => user.patient, { onDelete: 'CASCADE' })
     @JoinColumn()
     patient: User;
 
-    @ManyToOne(() => User, user => user.doctor)
+    @ManyToOne(() => User, user => user.doctor, { onDelete: 'CASCADE' })
     @JoinColumn()
     doctor: User;
 }

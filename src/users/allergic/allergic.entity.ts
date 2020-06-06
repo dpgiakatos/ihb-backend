@@ -21,7 +21,7 @@ export class Allergic {
     userId: string;
 
     @Exclude()
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn()
     user?: User;
 }

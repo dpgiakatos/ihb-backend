@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Delete, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../auth/models/claims.interface';
@@ -65,6 +65,52 @@ export class UsersTabController {
     @Roles(Role.Administrator)
     async getUser(@Param('userId') id: string) {
         await this.userService.assertExists(id);
-        return await this.usersTabService.getUser(id);
+        const info = await this.usersTabService.getUser(id);
+        const role = await this.usersTabService.getUserRole(id);
+        return { info, role };
+    }
+
+    @Get(':userId/set-role')
+    @Roles(Role.Administrator)
+    async setUserRole(
+        @Param('userId') id: string,
+        @Query('role') role: string
+    ) {
+       const user = await this.userService.findOneById(id);
+       if (!user) {
+           throw new NotFoundException();
+       }
+       if (role === 'Doctor') {
+           await this.usersTabService.setUserRole(user, Role.Doctor);
+       } else if (role === 'Administrator') {
+           await this.usersTabService.setUserRole(user, Role.Administrator);
+       }
+    }
+
+    @Delete(':userId/delete-role')
+    @Roles(Role.Administrator)
+    async deleteUserRole(
+        @Param('userId') id: string,
+        @Query('role') role: string
+    ) {
+        const user = await this.userService.findOneById(id);
+        if (!user) {
+            throw new NotFoundException();
+        }
+        if (role === 'Doctor') {
+            await this.usersTabService.deleteUserRole(user, Role.Doctor);
+        } else if (role === 'Administrator') {
+            await this.usersTabService.deleteUserRole(user, Role.Administrator);
+        }
+    }
+
+    @Delete(':userId/delete')
+    @Roles(Role.Administrator)
+    async deleteUser(@Param('userId') id: string) {
+        const user = await this.userService.findOneById(id);
+        if (!user) {
+            throw new NotFoundException();
+        }
+        await this.userService.delete(user);
     }
 }

@@ -49,7 +49,7 @@ export class Personal {
 
     @Exclude()
     @IsUnique<Personal>(o => o.id, { message: 'Personal information already exists. Please use Put method to edit' })
-    @OneToOne(() => User)
+    @OneToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn()
     user?: User;
 }

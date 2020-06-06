@@ -20,7 +20,7 @@ export class ExtraVaccination {
     userId: string;
 
     @Exclude()
-    @ManyToOne(() => User, user => user.extraVaccinations)
+    @ManyToOne(() => User, user => user.extraVaccinations, { onDelete: 'CASCADE' })
     @JoinColumn()
     user?: User;
 }

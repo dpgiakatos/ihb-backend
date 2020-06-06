@@ -31,8 +31,23 @@ export class AuthService {
             user,
             role
         });
+        if (!(await this.rolesRepository.findOne(userRole))) {
+            await this.rolesRepository.save(userRole);
+        }
+    }
 
-        await this.rolesRepository.save(userRole);
+    async getUserRole(userId: string): Promise<Role[]> {
+        return await this.rolesRepository.find({
+            select: ['role'],
+            where: [{ user: userId }]
+        });
+    }
+
+    async deleteUserRole(user: User, role: RoleEnum) {
+        return await this.rolesRepository.delete({
+            user,
+            role
+        });
     }
 
     private async verifyCredentials(user: User | undefined, password: string) {

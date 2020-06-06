@@ -10,6 +10,6 @@ export class Role {
     @Column('enum', { enum: RoleEnum })
     role: RoleEnum;
 
-    @ManyToOne(() => User, user => user.roles)
+    @ManyToOne(() => User, user => user.roles, { onDelete: 'CASCADE' })
     user: User;
 }
