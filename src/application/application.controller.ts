@@ -70,6 +70,6 @@ export class ApplicationController {
     @Delete(':applicationId/delete')
     @Roles(Role.Administrator)
     async delete(@Param('applicationId') applicationId: string) {
-
+        await this.applicationService.delete(applicationId);
     }
 }
