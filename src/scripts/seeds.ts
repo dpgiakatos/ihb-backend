@@ -25,10 +25,13 @@ async function bootstrap() {
     const user = await userService.create('user@user.com', 'test');
     await authService.setUserRole(user, Role.User);
     const doctor = await userService.create('doctor@doctor.com', 'test');
+    await authService.setUserRole(doctor, Role.User);
     await authService.setUserRole(doctor, Role.Doctor);
     const admin = await userService.create('admin@admin.com', 'test');
+    await authService.setUserRole(admin, Role.User);
     await authService.setUserRole(admin, Role.Administrator);
     const superUser = await userService.create('super@super.com', 'test');
+    await authService.setUserRole(superUser, Role.User);
     await authService.setUserRole(superUser, Role.Doctor);
     await authService.setUserRole(superUser, Role.Administrator);
 

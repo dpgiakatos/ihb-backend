@@ -13,7 +13,7 @@ export class UsersService {
 
 
     async assertExists(id: string) {
-        if(!(await this.usersRepository.find({ id }))) {
+        if(!(await this.usersRepository.findOne({ id }))) {
             throw new NotFoundException();
         }
     }

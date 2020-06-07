@@ -18,16 +18,13 @@ export class UsersTabController {
         @Query('administrator') administrator: boolean
     ) {
         if (doctor && administrator) {
-            const users = await this.usersTabService.getUsersWithRoleDoctorAndAdministrator(page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.getUsersWithRoleDoctorAndAdministrator(page);
             return { users, count };
         } else if (doctor) {
-            const users = await this.usersTabService.getAllDoctors(page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.getAllDoctors(page);
             return { users, count };
         } else if (administrator) {
-            const users = await this.usersTabService.getAllAdministrators(page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.getAllAdministrators(page);
             return { users, count };
         } else {
             const [users, count] = await this.usersTabService.getAllUsers(page);
@@ -44,16 +41,13 @@ export class UsersTabController {
         @Query('administrator') administrator: boolean
     ) {
         if (doctor && administrator) {
-            const users = await this.usersTabService.searchUsersWithRoleDoctorAndAdministrator(search, page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.searchUsersWithRoleDoctorAndAdministrator(search, page);
             return { users, count };
         } else if (doctor) {
-            const users = await this.usersTabService.searchAllDoctors(search, page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.searchAllDoctors(search, page);
             return { users, count };
         } else if (administrator) {
-            const users = await this.usersTabService.searchAllAdministrators(search, page);
-            const count = users.length;
+            const [users, count] = await this.usersTabService.searchAllAdministrators(search, page);
             return { users, count };
         } else {
             const [users, count] = await this.usersTabService.searchAllUsers(search, page);

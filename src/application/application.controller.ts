@@ -32,6 +32,9 @@ export class ApplicationController {
             await this.applicationService.assertExists(claims.id);
             const splitFile = file.originalname.split('.');
             const suffix = splitFile[splitFile.length - 1];
+            if (suffix !== 'zip') {
+                throw new NotImplementedException();
+            }
             await rename(file.path, file.destination + '\\' + claims.id + '.' + suffix, async (err) => {
                 if (err) {
                     throw new NotImplementedException();
@@ -49,22 +52,24 @@ export class ApplicationController {
         }
     }
 
-    @Get(':userId')
-    @Roles(Role.Administrator)
-    async getFileName(@Param('userId') id: string) {
-        try {
-            await this.usersService.assertExists(id);
-            await this.applicationService.assertExists(id);
-            return await this.applicationService.getFileName(id);
-        } catch (e) {
-            throw e;
-        }
+    @Get('hasApplication')
+    async hasApplication(@User() claims: Claims) {
+        return await this.applicationService.hasApplication(claims.id);
     }
 
-    @Get('all')
+    @Get('get-all')
     @Roles(Role.Administrator)
     async getApplications(@Query('page') page = 1) {
-        return await this.applicationService.getApplications(page);
+        const [applications, count] = await this.applicationService.getApplications(page);
+        return { applications, count };
+    }
+
+    @Get(':userId/get')
+    @Roles(Role.Administrator)
+    async getFileName(@Param('userId') id: string) {
+        await this.usersService.assertExists(id);
+        await this.applicationService.assertExists(id);
+        return await this.applicationService.getFileName(id);
     }
 
     @Delete(':applicationId/delete')
