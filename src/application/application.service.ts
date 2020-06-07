@@ -21,7 +21,7 @@ export  class ApplicationService {
     }
 
     async assertExists(userId: string) {
-        if (await this.applicationRepository.findOne({ where: { user: { id: userId } } })) {
+        if (!(await this.applicationRepository.findOne({ where: { user: { id: userId } } }))) {
             throw new NotFoundException();
         }
     }
@@ -34,8 +34,9 @@ export  class ApplicationService {
     }
 
     async getFileName(userId: string) {
-        const file = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
-        return file?.user.id + '.' + file?.suffix;
+        const application = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
+        const file = userId + '.' + application?.suffix;
+        return file;
     }
 
     async getApplications(page: number) {
@@ -48,25 +49,29 @@ export  class ApplicationService {
                 'select distinct application.id\n' +
                 'from application inner join user on application.userId=user.id\n' +
                 'inner join role on user.id=role.userId\n' +
-                'where role.role=\'Doctor\'\n' +
-                ')'),
-            await this.applicationRepository.createQueryBuilder( 'a')
-                .select('a.id', 'id')
-                .innerJoin('user', 'u', 'a.userId=u.id')
-                .innerJoin('personal', 'p', 'u.id = p.userId')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('r.role != :doctor', { doctor: 'Doctor' })
-                .getCount()
+                'where role.role=\'Doctor\')\n' +
+                'order by application.createdTime\n' +
+                'limit ?, ?', [(page*10)-10, 10]
+                ),
+            await this.applicationRepository.query(
+                'select distinct count(application.id) as count\n' +
+                'from application inner join user on application.userId=user.id\n' +
+                'where application.id not in (\n' +
+                'select distinct application.id\n' +
+                'from application inner join user on application.userId=user.id\n' +
+                'inner join role on user.id=role.userId\n' +
+                'where role.role=\'Doctor\')'
+                )
         ];
     }
 
-    async delete(id: string) {
-        const existing = await this.applicationRepository.findOne(id);
+    async delete(userId: string) {
+        const existing = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
         if (!existing) {
             throw new NotFoundException();
         }
         try {
-            await unlink('applications\\' + existing.id + '.' + existing.suffix, async (err) => {
+            await unlink('applications\\' + userId + '.' + existing.suffix, async (err) => {
                 if (err) {
                     throw new NotFoundException();
                 } else {

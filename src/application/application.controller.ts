@@ -6,6 +6,7 @@ import {
     Param,
     Post,
     Query,
+    Res,
     UploadedFile,
     UseInterceptors
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { Claims, Role } from '../auth/models/claims.interface';
 import { ApplicationBindings } from './application.bindings';
 import { rename, unlink } from 'fs';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Response } from 'express';
 
 @Auth
 @Controller('application')
@@ -64,17 +66,27 @@ export class ApplicationController {
         return { applications, count };
     }
 
-    @Get(':userId/get')
+    @Get(':userId/download')
     @Roles(Role.Administrator)
-    async getFileName(@Param('userId') id: string) {
+    async getFileName(@Param('userId') id: string, @Res() res: Response) {
         await this.usersService.assertExists(id);
         await this.applicationService.assertExists(id);
-        return await this.applicationService.getFileName(id);
+        const file = await this.applicationService.getFileName(id);
+        return res.download('./applications/'+file);
     }
 
-    @Delete(':applicationId/delete')
+    @Get(':userId/hasApplication')
     @Roles(Role.Administrator)
-    async delete(@Param('applicationId') applicationId: string) {
-        await this.applicationService.delete(applicationId);
+    async hasUserApplication(@Param('userId') id: string) {
+        await this.usersService.assertExists(id);
+        return await this.applicationService.hasApplication(id);
+    }
+
+    @Delete(':userId/delete')
+    @Roles(Role.Administrator)
+    async delete(@Param('userId') id: string) {
+        await this.usersService.assertExists(id);
+        await this.applicationService.assertExists(id);
+        await this.applicationService.delete(id);
     }
 }
