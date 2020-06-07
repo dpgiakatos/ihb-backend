@@ -8,6 +8,7 @@ import { Allergic } from  './allergic/allergic.entity';
 import { Hospital } from './hospital/hospital.entity';
 import { Alert } from '../doctor/alert.entity';
 import { Application } from '../application/application.entity';
+import { Token } from '../auth/models/tokens.entity';
 
 @Entity()
 @Unique(['email'])
@@ -47,4 +48,7 @@ export class User {
 
     @OneToMany(() => Application, application => application.user)
     applications?: Application[];
+
+    @OneToMany(() => Token, token => token.user)
+    token: Token[];
 }
