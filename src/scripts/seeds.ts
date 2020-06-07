@@ -49,12 +49,13 @@ async function bootstrap() {
         emergencyContact: '6987654321'
     }, user.id);
 
-
     // const processes = [];
 
-    // for(let i = 0; i < 50; i++) {
+    // for(let i = 0; i < 1000; i++) {
     //     processes.push((async () => {
+    //         console.log('started' + i);
     //         const user = await userService.create('user@user.com' + i, 'test');
+    //         console.log('done partially' + i);
     //         await authService.setUserRole(user, Role.User);
     //         await personalService.create({
     //             firstName: 'First' + i,
@@ -69,7 +70,7 @@ async function bootstrap() {
     //             mobilePhone: '6912345678',
     //             emergencyContact: '6987654321'
     //         }, user.id);
-    //         return true;
+    //         console.log('done' + i);
     //     })());
     // }
 
@@ -140,11 +141,8 @@ async function bootstrap() {
         vaccinesRepo.create({ name: 'Hepatitis A' })
     ]);
 
-    console.log('went here');
-
     await app.close();
 
-    console.log('got out');
 }
 bootstrap().catch(err => {
     console.error(err);

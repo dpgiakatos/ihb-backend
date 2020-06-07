@@ -22,6 +22,8 @@ import { ApplicationModule } from './application/application.module';
   imports: [
     AuthModule,
     TypeOrmModule.forRoot({
+      acquireTimeout: 30000,
+      connectTimeout: 30000,
       autoLoadEntities: true,
       type: 'mysql',
       host: 'localhost',
@@ -31,7 +33,10 @@ import { ApplicationModule } from './application/application.module';
       database: 'ihb',
       subscribers: [OnValidationSubscriber],
       synchronize: true,
-      logging: true
+      logging: true,
+      extra: {
+        connectionLimit: 50
+      }
     }),
     MailerModule.forRoot({
       transport: { jsonTransport: true },

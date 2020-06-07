@@ -58,7 +58,7 @@ export class PersonalService {
         });
     }
 
-    async patientSearchingWithFilters(search: string, country: string | undefined, claims: Claims, page: number) {
+    async patientSearchingWithFilters(search: string, country: string, claims: Claims, page: number) {
         return await this.personalRepository.find({
             select: [
                 'firstName',
