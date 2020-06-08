@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './application.entity';
 import { Repository } from 'typeorm';
 import { Claims } from '../auth/models/claims.interface';
-import { unlink } from 'fs';
+import { promises as fs } from 'fs';
 
 @Injectable()
 export  class ApplicationService {
@@ -66,20 +66,15 @@ export  class ApplicationService {
     }
 
     async delete(userId: string) {
-        const existing = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
-        if (!existing) {
-            throw new NotFoundException();
-        }
         try {
-            await unlink('applications\\' + userId + '.' + existing.suffix, async (err) => {
-                if (err) {
-                    throw new NotFoundException();
-                } else {
-                    await this.applicationRepository.remove(existing);
-                }
-            });
+            const existing = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
+            if (!existing) {
+                throw new NotFoundException();
+            }
+            await fs.unlink('applications\\' + userId + '.' + existing.suffix);
+            await this.applicationRepository.remove(existing);
         } catch (e) {
-            throw new NotFoundException();
+            throw e;
         }
     }
 }

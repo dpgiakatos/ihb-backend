@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { User } from '../auth/decorators/user.decorator';
 import { Claims, Role } from '../auth/models/claims.interface';
 import { ApplicationBindings } from './application.bindings';
-import { rename, unlink } from 'fs';
+import { promises as fs } from 'fs';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Response } from 'express';
 
@@ -37,19 +37,10 @@ export class ApplicationController {
             if (suffix !== 'zip') {
                 throw new NotImplementedException();
             }
-            await rename(file.path, file.destination + '\\' + claims.id + '.' + suffix, async (err) => {
-                if (err) {
-                    throw new NotImplementedException();
-                } else {
-                    await this.applicationService.upload(claims, suffix);
-                }
-            });
+            await fs.rename(file.path, file.destination + '\\' + claims.id + '.' + suffix);
+            await this.applicationService.upload(claims, suffix);
         } catch (e) {
-            await unlink(file.path, (err) => {
-                if (err) {
-                    throw new NotImplementedException();
-                }
-            });
+            await fs.unlink(file.path);
             throw e;
         }
     }
