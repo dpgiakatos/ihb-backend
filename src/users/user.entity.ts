@@ -5,7 +5,7 @@ import { Exclude } from 'class-transformer';
 import { ExtraVaccination } from './extra-vaccinations/extra-vaccination.entity';
 import { Vaccine } from './vaccinations/vaccine.entity';
 import { Allergic } from  './allergic/allergic.entity';
-import { Hospital } from './hospital/hospital.entity';
+import { HospitalTreatment } from './hospital/hospital.entity';
 import { Alert } from '../doctor/alert.entity';
 import { Application } from '../application/application.entity';
 import { Token } from '../auth/models/tokens.entity';
@@ -37,8 +37,8 @@ export class User {
     @OneToMany(() => Allergic, allergic => allergic.user)
     allergic?: Allergic[];
 
-    @OneToMany(() => Hospital, hospital => hospital.user)
-    hospital?: Hospital[];
+    @OneToMany(() => HospitalTreatment, treatment => treatment.user)
+    treatments?: HospitalTreatment[];
 
     @OneToMany(() => Alert, alert => alert.patient)
     patient?: Alert[];

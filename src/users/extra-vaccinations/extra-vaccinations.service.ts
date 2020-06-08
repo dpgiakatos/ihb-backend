@@ -16,7 +16,7 @@ export class ExtraVaccinationsService {
     async findExtraVaccinations(userId: string, page: number) {
         return await this.extraVaccinationsRepository.findAndCount({
             where: { user: { id: userId } },
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { date: 'ASC' })
         });
     }
 

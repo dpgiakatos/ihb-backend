@@ -10,6 +10,8 @@
     "noFallthroughCasesInSwitch": true,
     "suppressImplicitAnyIndexErrors": true,
     "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "strict": true,
     "sourceMap": true,
     "outDir": "./dist",

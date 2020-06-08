@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, ForbiddenException } from '@nestjs/common';
 import { HospitalService } from './hospital.service';
-import { Hospital } from './hospital.entity';
 import { User } from '../../auth/decorators/user.decorator';
 import { HospitalBindings } from './hospital.bindings';
 import { Claims, Role } from '../../auth/models/claims.interface';
@@ -8,6 +7,7 @@ import { Auth } from '../../auth/decorators/auth.decorator';
 import { UsersService } from '../users.service';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { DoctorService } from '../../doctor/doctor.service';
+import { HospitalTreatment } from './hospital.entity';
 
 @Auth
 @Controller('user')
@@ -23,7 +23,7 @@ export class HospitalController {
     async getUserTreatments(
         @User() user: Claims,
         @Query('page') page = 1
-    ): Promise<{ treatments: Hospital[]; count: number; }> {
+    ): Promise<{ treatments: HospitalTreatment[]; count: number; }> {
         const [treatments, count] = await this.hospitalService.findHospitalTreatments(user.id, page);
         return { treatments, count };
     }
@@ -34,7 +34,7 @@ export class HospitalController {
         @Param('userId') id: string, 
         @Query('page') page: 1,
         @User() claims: Claims
-    ): Promise<{ treatments: Hospital[]; count: number }> {
+    ): Promise<{ treatments: HospitalTreatment[]; count: number }> {
         if (! (await this.doctorService.hasAccess(id, claims))) {
             throw new ForbiddenException();
         }
@@ -49,7 +49,7 @@ export class HospitalController {
         @Param('userId') id: string,
         @Body() hospital: HospitalBindings,
         @User() claims: Claims
-    ): Promise<Hospital>{
+    ): Promise<HospitalTreatment>{
         if (!(await this.doctorService.hasAccess(id, claims))) {
             throw new ForbiddenException();
         }
@@ -63,7 +63,7 @@ export class HospitalController {
         @Param('hospitalTreatmentId') treatmentId: string,
         @Body() hospital: HospitalBindings,
         @User() claims: Claims
-    ): Promise<Hospital> {
+    ): Promise<HospitalTreatment> {
         const userId = await this.hospitalService.getUserId(treatmentId);
         if (!(await this.doctorService.hasAccess(userId, claims))) {
             throw new ForbiddenException();

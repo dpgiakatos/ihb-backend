@@ -21,7 +21,7 @@ export class ContactService {
 
     async findAllContact(page: number) {
         return await this.contactRepository.findAndCount({
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { createdAt: 'ASC' })
         });
     }
 

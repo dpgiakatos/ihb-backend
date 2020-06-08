@@ -15,7 +15,7 @@ export class AllergicService {
     async findAllAllergic(userId: string, page: number) {
         return await this.allergicRepository.findAndCount({
             where: { user: { id: userId } },
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { id: 'ASC' })
         });
     }
 

@@ -13,7 +13,7 @@ import { Personal } from './personal/personal.entity';
 import { PersonalService } from './personal/personal.service';
 import { PersonalController } from './personal/personal.controller';
 import { Allergic } from './allergic/allergic.entity';
-import { Hospital } from './hospital/hospital.entity';
+import { HospitalTreatment } from './hospital/hospital.entity';
 import { AllergicService } from './allergic/allergic.service';
 import { HospitalService } from './hospital/hospital.service';
 import { AllergicController } from './allergic/allergic.controller';
@@ -21,7 +21,7 @@ import { HospitalController } from './hospital/hospital.controller';
 import { DoctorModule } from '../doctor/doctor.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Personal, Vaccine, ExtraVaccination, Allergic, Hospital]), DoctorModule],
+  imports: [TypeOrmModule.forFeature([User, Personal, Vaccine, ExtraVaccination, Allergic, HospitalTreatment]), DoctorModule],
   providers: [UsersService, PersonalService, VaccinationsService, ExtraVaccinationsService, AllergicService, HospitalService],
   controllers: [UsersController, PersonalController, VaccinationsController, ExtraVaccinationsController, AllergicController, HospitalController],
   exports: [UsersService, PersonalService, TypeOrmModule]

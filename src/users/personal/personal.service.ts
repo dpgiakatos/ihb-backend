@@ -42,7 +42,7 @@ export class PersonalService {
     }
 
     async patientSearchingWithoutFilters(search: string, claims: Claims, page: number) {
-        return await this.personalRepository.find({
+        return await this.personalRepository.findAndCount({
             select: [
                 'firstName',
                 'lastName',
@@ -54,12 +54,12 @@ export class PersonalService {
                 { lastName: Like('%' + search + '%'), userId: Not(claims.id) },
                 { ssnvs: Like('%' + search + '%'), userId: Not(claims.id) }
             ],
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
         });
     }
 
     async patientSearchingWithFilters(search: string, country: string, claims: Claims, page: number) {
-        return await this.personalRepository.find({
+        return await this.personalRepository.findAndCount({
             select: [
                 'firstName',
                 'lastName',
@@ -71,14 +71,14 @@ export class PersonalService {
                 { lastName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
                 { ssnvs: Like('%' + search + '%'), country: country, userId: Not(claims.id) }
             ],
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
         });
     }
 
     async findAllUsers(page: number) {
         return await this.personalRepository.findAndCount({
             select: ['firstName', 'lastName', 'userId'],
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
         });
     }
 
@@ -165,7 +165,7 @@ export class PersonalService {
                 { firstName: Like('%' + search + '%') },
                 { lastName: Like('%' + search + '%') }
             ],
-            ...GetPaginationQuery(page, 10)
+            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
         });
     }
 

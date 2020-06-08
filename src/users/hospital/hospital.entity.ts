@@ -3,7 +3,7 @@ import { User } from '../user.entity';
 import { Exclude } from 'class-transformer'
 
 @Entity()
-export class Hospital {
+export class HospitalTreatment {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

@@ -5,6 +5,7 @@ import { Claims, Role } from '../auth/models/claims.interface';
 import { Alert } from './alert.entity';
 import { PersonalService } from '../users/personal/personal.service';
 import { AlertLog } from './doctor.bindings';
+import { Personal } from '../users/personal/personal.entity';
 
 @Injectable()
 export class DoctorService {
@@ -15,10 +16,7 @@ export class DoctorService {
         private alertRepository: Repository<Alert>
     ) {}
 
-    async find(search: string, country: string | undefined, claims: Claims, page: number) {
-        if (search === '') {
-            return [];
-        }
+    async find(search: string, country: string | undefined, claims: Claims, page: number): Promise<[Personal[], number]> {
         if (!country) {
             return await this.personalService.patientSearchingWithoutFilters(search, claims, page);
         } else {
