@@ -1,4 +1,4 @@
 export enum Token {
-    forgotPassword = 'forgotPassword',
-    authentication = 'authentication'
+    FORGOT_PASSWORD = 'forgotPassword',
+    VERIFY = 'verify'
 }

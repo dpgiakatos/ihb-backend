@@ -52,7 +52,7 @@ export  class ApplicationService {
                 'where role.role=\'Doctor\')\n' +
                 'order by application.createdTime\n' +
                 'limit ?, ?', [(page*10)-10, 10]
-                ),
+            ),
             await this.applicationRepository.query(
                 'select distinct count(application.id) as count\n' +
                 'from application inner join user on application.userId=user.id\n' +
@@ -61,7 +61,7 @@ export  class ApplicationService {
                 'from application inner join user on application.userId=user.id\n' +
                 'inner join role on user.id=role.userId\n' +
                 'where role.role=\'Doctor\')'
-                )
+            )
         ];
     }
 

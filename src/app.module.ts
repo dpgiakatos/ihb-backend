@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { isUnique } from './helpers/unique.decorator';
 import { OnValidationSubscriber } from './helpers/validation.typeorm-subscriber';
@@ -21,22 +21,24 @@ import { ApplicationModule } from './application/application.module';
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forRoot({
-      acquireTimeout: 30000,
-      connectTimeout: 30000,
-      autoLoadEntities: true,
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'ihb',
-      subscribers: [OnValidationSubscriber],
-      synchronize: true,
-      logging: true,
-      extra: {
-        connectionLimit: 50
-      }
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        connectTimeout: 30000,
+        autoLoadEntities: true,
+        type: 'mysql',
+        host: 'localhost',
+        port: 3306,
+        username: 'root',
+        password: configService.get('databasePassword'),
+        database: 'ihb',
+        subscribers: [OnValidationSubscriber],
+        synchronize: true,
+        logging: true,
+        extra: {
+          connectionLimit: 50
+        }
+      }),
     }),
     MailerModule.forRoot({
       transport: { jsonTransport: true },

@@ -56,4 +56,9 @@ export class UsersService {
             throw new UnauthorizedException();
         }
     }
+
+    async verify(user: User) {
+        user.verified = true;
+        await this.usersRepository.save(user);
+    }
 }

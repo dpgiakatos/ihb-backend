@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put, Redirect } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -9,6 +9,7 @@ import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
 import { PersonalService } from '../users/personal/personal.service';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Token } from './models/token.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -30,17 +31,30 @@ export class AuthController {
     @Post('register')
     async register(@Body() userData: RegisterBindingModel): Promise<void> {
         const user = await this.usersService.create(userData.email, userData.password);
+        const verifyToken = await this.authService.getVerificationToken(user.id);
         await this.authService.setUserRole(user, Role.User);
         await this.personalService.create({ firstName: userData.firstName, lastName: userData.lastName }, user.id);
         await this.mailerService.sendMail({
             to: userData.email,
             template: 'verify',
             context: {
-                buttonUrl: `${this.configService.get<string>('apiUrl')}/auth/verify/jhgfhjsdgfajhgfdjhasgf`,
+                buttonUrl: `${this.configService.get<string>('apiUrl')}/auth/verify/${verifyToken}`,
                 title: 'Email verification'
             },
             subject: 'Welcome to IHB. Verify your email!'
         });
+    }
+
+    @Get('verify/:token')
+    @Redirect()
+    async verify(@Param('token') token: string) {
+        try {
+            await this.authService.verify(token);
+            return { url: this.configService.get<string>('frontendUrl')! + '/auth/login' };
+        } catch(e) {
+            console.log(e);
+            return { url: this.configService.get<string>('frontendUrl')! + '/404' };
+        }
     }
 
     @Post('forgot-password')
@@ -61,10 +75,11 @@ export class AuthController {
     }
 
     @Get('reset-password/:token')
+    @Redirect()
     async checkToken(
         @Param('token') token: string
     ): Promise<void> {
-        await this.authService.checkTokenValidity(token);
+        await this.authService.checkTokenValidity(token, Token.FORGOT_PASSWORD);
     }
 
     @Put('reset-password/:token')

@@ -8,7 +8,7 @@ import { Allergic } from  './allergic/allergic.entity';
 import { HospitalTreatment } from './hospital/hospital.entity';
 import { Alert } from '../doctor/alert.entity';
 import { Application } from '../application/application.entity';
-import { Token } from '../auth/models/tokens.entity';
+import { Token } from '../auth/models/token.entity';
 
 @Entity()
 @Unique(['email'])
@@ -23,6 +23,9 @@ export class User {
     @Exclude()
     @Column()
     password: string;
+
+    @Column({ default: false })
+    verified: boolean;
 
     @OneToMany(() => Role, role => role.user, { eager: true })
     roles: Role[];

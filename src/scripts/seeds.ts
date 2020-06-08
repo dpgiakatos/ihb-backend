@@ -49,32 +49,29 @@ async function bootstrap() {
         emergencyContact: '6987654321'
     }, user.id);
 
-    // const processes = [];
+    const processes = [];
 
-    // for(let i = 0; i < 1000; i++) {
-    //     processes.push((async () => {
-    //         console.log('started' + i);
-    //         const user = await userService.create('user@user.com' + i, 'test');
-    //         console.log('done partially' + i);
-    //         await authService.setUserRole(user, Role.User);
-    //         await personalService.create({
-    //             firstName: 'First' + i,
-    //             lastName: 'Last' + i,
-    //             ssnvs: '01234567890' + i,
-    //             birthDate: '1950-01-01',
-    //             country: 'Greece',
-    //             fatherFirstName: 'FatherFname',
-    //             fatherLastName: 'FatherLname',
-    //             motherFirstName: 'MotherFname',
-    //             motherLastName: 'MotherLname',
-    //             mobilePhone: '6912345678',
-    //             emergencyContact: '6987654321'
-    //         }, user.id);
-    //         console.log('done' + i);
-    //     })());
-    // }
+    for(let i = 0; i < 1000; i++) {
+        processes.push((async () => {
+            const user = await userService.create('user@user.com' + i, 'test');
+            await authService.setUserRole(user, Role.User);
+            await personalService.create({
+                firstName: 'First' + i,
+                lastName: 'Last' + i,
+                ssnvs: '01234567890' + i,
+                birthDate: '1950-01-01',
+                country: 'Greece',
+                fatherFirstName: 'FatherFname',
+                fatherLastName: 'FatherLname',
+                motherFirstName: 'MotherFname',
+                motherLastName: 'MotherLname',
+                mobilePhone: '6912345678',
+                emergencyContact: '6987654321'
+            }, user.id);
+        })());
+    }
 
-    // await Promise.all(processes);
+    await Promise.all(processes);
 
     await personalService.create({
         firstName: 'Doctor',

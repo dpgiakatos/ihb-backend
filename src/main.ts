@@ -5,6 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { UnprocessableEntityException } from './helpers/unprocessable-entity-exception.interface';
 import * as morgan from 'morgan';
 
+if(process.env.NODE_ENV !== 'production') {
+  require('source-map-support').install();
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe({
@@ -22,4 +26,4 @@ async function bootstrap() {
 
   await app.listen(app.get(ConfigService).get<number>('port') || 3000);
 }
-bootstrap();
+bootstrap().catch(console.error);

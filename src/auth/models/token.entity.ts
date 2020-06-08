@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../../users/user.entity';
-import { Token as TokenEnum } from '../models/token.interface'
+import { Token as TokenEnum } from './token.interface'
 import { Exclude } from 'class-transformer';
 
 
@@ -12,14 +12,11 @@ export class Token {
     @Column('enum', { enum: TokenEnum })
     tokenType: TokenEnum;
 
-    @Column()
+    @Column({ type: 'char', length: 96 })
     token: string;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6) '})
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     timestamp: Date;
-
-    @Column({ type: 'boolean' })
-    isActive: boolean;
 
     @Column()
     userId: string;
