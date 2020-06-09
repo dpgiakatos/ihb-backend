@@ -85,7 +85,7 @@ export class PersonalService {
     async findAllDoctors(page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -97,7 +97,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'r', 'u.id = r.userId')
                 .where('r.role = :doctor', { doctor: 'Doctor' })
@@ -109,7 +109,7 @@ export class PersonalService {
     async findAllAdministrators(page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -121,7 +121,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'r', 'u.id = r.userId')
                 .where('r.role = :administrator', { administrator: 'Administrator' })
@@ -133,7 +133,7 @@ export class PersonalService {
     async findUsersWithRoleDoctorAndAdministrator(page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -145,7 +145,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
                 .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
@@ -172,7 +172,7 @@ export class PersonalService {
     async searchAllDoctors(search: string, page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -186,7 +186,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'r', 'u.id = r.userId')
                 .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
@@ -200,7 +200,7 @@ export class PersonalService {
     async searchAllAdministrators(search: string, page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -214,7 +214,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'r', 'u.id = r.userId')
                 .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
@@ -228,7 +228,7 @@ export class PersonalService {
     async searchUsersWithRoleDoctorAndAdministrator(search: string, page: number) {
         return [
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
                 .innerJoin('user', 'u', 'p.userId=u.id')
@@ -242,7 +242,7 @@ export class PersonalService {
                 .distinct(true)
                 .getRawMany(),
             await this.personalRepository.createQueryBuilder( 'p')
-                .select('p.userId', 'id')
+                .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
                 .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
