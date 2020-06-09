@@ -12,7 +12,11 @@ export default () => {
         apiUrl: 'https://internationalhealthbooklet.tech/api',
         frontendUrl: 'https://internationalhealthbooklet.tech/',
         databasePassword,
-        signingSecret
+        signingSecret,
+        redisOptions: {
+            host: 'localhost',
+            port: 6379
+        }
     };
 }
 

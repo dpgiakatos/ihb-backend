@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../app/users/users.service';
 import { compare }  from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../users/user.entity';
+import { User } from '../app/users/user.entity';
 import { Claims } from './models/claims.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './models/role.entity';
@@ -151,7 +151,7 @@ export class AuthService {
     }
 
     private generateToken(): string {
-        return randomBytes(72).toString('base64').replace(/=/g, '-').replace(/\+/g, '-').replace(/\//g, '_');
+        return randomBytes(72).toString('base64').replace(/\+/g, '-').replace(/\//g, '_');
     }
 
 }

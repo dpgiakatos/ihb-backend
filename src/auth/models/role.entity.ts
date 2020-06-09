@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Role as RoleEnum } from '../models/claims.interface';
-import { User } from '../../users/user.entity';
+import { User } from '../../app/users/user.entity';
 
 @Entity()
 export class Role {

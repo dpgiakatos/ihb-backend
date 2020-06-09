@@ -1,15 +1,18 @@
 import { Controller, Post, Body, Get, Param, Put, Redirect } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../app/users/users.service';
 import { User } from './decorators/user.decorator';
 import { LoginBindingModel, RegisterBindingModel, ForgotPassworBindingdModel, ResetPasswordBindingModel } from './models/auth.bindings';
 import { Claims, Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
 import { Auth } from './decorators/auth.decorator';
-import { PersonalService } from '../users/personal/personal.service';
-import { MailerService } from '@nestjs-modules/mailer';
+import { PersonalService } from '../app/users/personal/personal.service';
 import { Token } from './models/token.interface';
+import { Connection } from 'typeorm';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { ISendMailOptions } from '@nestjs-modules/mailer';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +20,9 @@ export class AuthController {
         private usersService: UsersService,
         private authService: AuthService,
         private personalService: PersonalService,
-        private mailerService: MailerService,
-        private configService: ConfigService
+        @InjectQueue('emails') private emailQueue: Queue<ISendMailOptions>,
+        private configService: ConfigService,
+        private connection: Connection
     ) { }
 
     @Post('login')
@@ -30,11 +34,14 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() userData: RegisterBindingModel): Promise<void> {
-        const user = await this.usersService.create(userData.email, userData.password);
-        const verifyToken = await this.authService.getVerificationToken(user.id);
-        await this.authService.setUserRole(user, Role.User);
-        await this.personalService.create({ firstName: userData.firstName, lastName: userData.lastName }, user.id);
-        await this.mailerService.sendMail({
+        const verifyToken = await this.connection.transaction(async () => {
+            const user = await this.usersService.create(userData.email, userData.password);
+            const verifyToken = await this.authService.getVerificationToken(user.id);
+            await this.authService.setUserRole(user, Role.User);
+            await this.personalService.create({ firstName: userData.firstName, lastName: userData.lastName }, user.id);
+            return verifyToken;
+        });
+        await this.emailQueue.add({
             to: userData.email,
             template: 'verify',
             context: {
@@ -63,7 +70,7 @@ export class AuthController {
     ): Promise<void> {
         const email = userEmail.email;        
         const token = await this.authService.generateForgotPasswordToken(email);
-        await this.mailerService.sendMail({
+        await this.emailQueue.add({
             to: email,
             template: 'reset-password',
             context: {

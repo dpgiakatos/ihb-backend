@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
-import { User } from '../../users/user.entity';
+import { User } from '../../app/users/user.entity';
 import { Token as TokenEnum } from './token.interface'
 import { Exclude } from 'class-transformer';
 

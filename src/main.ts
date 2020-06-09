@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { UnprocessableEntityException } from './helpers/unprocessable-entity-exception.interface';
 import * as morgan from 'morgan';
 
+import './helpers/typeorm-monkey-patch';
+
 if(process.env.NODE_ENV !== 'production') {
   require('source-map-support').install();
 }

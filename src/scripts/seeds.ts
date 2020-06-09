@@ -2,13 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Vaccine } from '../users/vaccinations/vaccine.entity';
+import { Vaccine } from '../app/users/vaccinations/vaccine.entity';
 import { Role } from '../auth/models/claims.interface';
 import { AuthService } from '../auth/auth.service';
-import { UsersService } from '../users/users.service';
-import { PersonalService } from '../users/personal/personal.service';
-import { AllergicService } from '../users/allergic/allergic.service';
-import { HospitalService } from '../users/hospital/hospital.service';
+import { UsersService } from '../app/users/users.service';
+import { PersonalService } from '../app/users/personal/personal.service';
+import { AllergicService } from '../app/users/allergic/allergic.service';
+import { HospitalService } from '../app/users/hospital/hospital.service';
 
 async function bootstrap() {
     const app = await NestFactory.createApplicationContext(AppModule);
