@@ -26,11 +26,17 @@ export  class ApplicationService {
         }
     }
 
+    async notExist(userId: string) {
+        if (await this.applicationRepository.findOne({ where: { user: { id: userId } } })) {
+            throw new NotFoundException();
+        }
+    }
+
     async hasApplication(userId: string) {
         if (await this.applicationRepository.findOne({ where: { user: { id: userId } } })) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     async getFileName(userId: string) {

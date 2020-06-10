@@ -33,7 +33,7 @@ export class ApplicationController {
     async uploadFile(@UploadedFile() file: ApplicationBindings, @User() claims: Claims) {
         try {
             await this.usersService.assertExists(claims.id);
-            await this.applicationService.assertExists(claims.id);
+            await this.applicationService.notExist(claims.id);
             const splitFile = file.originalname.split('.');
             const suffix = splitFile[splitFile.length - 1];
             if (suffix !== 'zip') {

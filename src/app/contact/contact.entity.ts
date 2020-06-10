@@ -11,7 +11,7 @@ export class Contact {
     @Column()
     subject: string;
 
-    @Column()
+    @Column({ type: 'text' })
     message: string;
 
     @CreateDateColumn()
