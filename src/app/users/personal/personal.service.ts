@@ -16,7 +16,7 @@ export class PersonalService {
     async findByUser(userId: string): Promise<Personal> {
         const personal = await this.personalRepository.findOne({ userId });
 
-        if(!personal) {
+        if (!personal) {
             throw new NotFoundException();
         }
 
@@ -132,7 +132,7 @@ export class PersonalService {
 
     async findUsersWithRoleDoctorAndAdministrator(page: number) {
         return [
-            await this.personalRepository.createQueryBuilder( 'p')
+            await this.personalRepository.createQueryBuilder('p')
                 .select('p.userId', 'userId')
                 .addSelect('p.firstName', 'firstName')
                 .addSelect('p.lastName', 'lastName')
@@ -144,7 +144,7 @@ export class PersonalService {
                 .orderBy('p.lastName')
                 .distinct(true)
                 .getRawMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
+            await this.personalRepository.createQueryBuilder('p')
                 .select('p.userId', 'userId')
                 .innerJoin('user', 'u', 'p.userId=u.id')
                 .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })

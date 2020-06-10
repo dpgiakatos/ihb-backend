@@ -59,7 +59,6 @@ export class AuthController {
             await this.authService.verify(token);
             return { url: this.configService.get<string>('frontendUrl')! + '/auth/login' };
         } catch(e) {
-            console.log(e);
             return { url: this.configService.get<string>('frontendUrl')! + '/404' };
         }
     }

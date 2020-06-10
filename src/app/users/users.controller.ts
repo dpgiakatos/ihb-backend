@@ -16,7 +16,6 @@ export class UsersController {
         @Param('userId') id: string,
         @Body() password: ChangePasswordBindings
     ): Promise<void> {
-        console.log(password)
         await this.userService.assertExists(id);
         await this.userService.changePasswordWithOldPassword(id, password.oldPassword, password.password);
     }
