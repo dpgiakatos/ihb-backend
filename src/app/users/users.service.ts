@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { hash, compare } from 'bcrypt';
+import { ApplicationService } from '../application/application.service';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User)
-        private usersRepository: Repository<User>
+        private usersRepository: Repository<User>,
+        private applicationService: ApplicationService
     ) {}
 
     async assertExists(id: string) {
@@ -35,6 +37,7 @@ export class UsersService {
     }
 
     async delete(user: User) {
+        await this.applicationService.deleteFile(user.id);
         await this.usersRepository.remove(user);
     }
 

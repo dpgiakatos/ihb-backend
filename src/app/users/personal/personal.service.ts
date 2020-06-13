@@ -78,7 +78,7 @@ export class PersonalService {
     async findAllUsers(page: number) {
         return await this.personalRepository.findAndCount({
             select: ['firstName', 'lastName', 'userId'],
-            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
+            ...GetPaginationQuery(page, 10, { lastName: 'ASC' })
         });
     }
 

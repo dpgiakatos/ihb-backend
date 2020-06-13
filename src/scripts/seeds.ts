@@ -22,18 +22,21 @@ async function bootstrap() {
 
     const vaccinesRepo = app.get<string, Repository<Vaccine>>(getRepositoryToken(Vaccine));
 
-    const user = await userService.create('user@user.com', 'test');
+    const user = await userService.create('user@user.com', 'testtest');
     await authService.setUserRole(user, Role.User);
-    const doctor = await userService.create('doctor@doctor.com', 'test');
+    const doctor = await userService.create('doctor@doctor.com', 'testtest');
     await authService.setUserRole(doctor, Role.User);
     await authService.setUserRole(doctor, Role.Doctor);
-    const admin = await userService.create('admin@admin.com', 'test');
+    const admin = await userService.create('admin@admin.com', 'testtest');
     await authService.setUserRole(admin, Role.User);
     await authService.setUserRole(admin, Role.Administrator);
-    const superUser = await userService.create('super@super.com', 'test');
+    const superUser = await userService.create('super@super.com', 'testtest');
     await authService.setUserRole(superUser, Role.User);
     await authService.setUserRole(superUser, Role.Doctor);
     await authService.setUserRole(superUser, Role.Administrator);
+
+    const test = await userService.create('test@test.com', 'testtest');
+    await authService.setUserRole(test, Role.User);
 
     await personalService.create({
         firstName: 'First',
@@ -49,7 +52,7 @@ async function bootstrap() {
         emergencyContact: '6987654321'
     }, user.id);
 
-    const processes = [];
+    /*const processes = [];
 
     for(let i = 0; i < 1000; i++) {
         processes.push((async () => {
@@ -71,7 +74,7 @@ async function bootstrap() {
         })());
     }
 
-    await Promise.all(processes);
+    await Promise.all(processes);*/
 
     await personalService.create({
         firstName: 'Doctor',
@@ -87,6 +90,11 @@ async function bootstrap() {
         firstName: 'Super',
         lastName: 'User',
     }, superUser.id);
+
+    await personalService.create({
+        firstName: 'Test',
+        lastName: 'Test',
+    }, test.id);
 
     await allergicService.addAllergy({
         name: 'Milk Allergy',

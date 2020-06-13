@@ -83,4 +83,15 @@ export  class ApplicationService {
             throw e;
         }
     }
+
+    async deleteFile(userId: string) {
+        try {
+            if (await this.hasApplication(userId)) {
+                const existing = await this.applicationRepository.findOne({ where: { user: { id: userId } } });
+                await fs.unlink('applications\\' + userId + '.' + existing?.suffix);
+            }
+        } catch (e) {
+            throw e;
+        }
+    }
 }
