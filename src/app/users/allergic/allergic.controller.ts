@@ -12,75 +12,75 @@ import { DoctorService } from '../../doctor/doctor.service';
 @Auth
 @Controller('user')
 export class AllergicController {
-  constructor(
-    private allergicService: AllergicService,
-    private userService: UsersService,
-    private doctorService: DoctorService
-  ) {}
+    constructor(
+        private allergicService: AllergicService,
+        private userService: UsersService,
+        private doctorService: DoctorService
+    ) { }
 
-  @Get('allergic')
-  async getAllergic(
-    @User() user: Claims,
-    @Query('page') page = 1
-  ): Promise<{ allergics: Allergic[]; count: number; }>{
-    const [allergics, count] = await this.allergicService.findAllAllergic(user.id, page);
-    return { allergics, count };
-  }
+    @Get('allergic')
+    async getAllergic(
+        @User() user: Claims,
+        @Query('page') page = 1
+    ): Promise<{ allergics: Allergic[]; count: number; }>{
+        const [allergics, count] = await this.allergicService.findAllAllergic(user.id, page);
+        return { allergics, count };
+    }
 
-  @Get(':userId/allergic')
-  @Roles(Role.Doctor)
+    @Get(':userId/allergic')
+    @Roles(Role.Doctor)
     async getSomeAllergic(
-      @Param('userId') id: string,
-      @Query('page') page: 1,
-      @User() claims: Claims
+        @Param('userId') id: string,
+        @Query('page') page: 1,
+        @User() claims: Claims
     ): Promise<{ allergics:Allergic[]; count: number; }> {
-      if (!(await this.doctorService.hasAccess(id, claims))) {
-        throw new ForbiddenException();
-      }
-      await this.userService.assertExists(id);
-      const [allergics, count] = await this.allergicService.findAllAllergic(id, page);
-      return { allergics, count };
-  }
-
-  @Post(':userId/allergic')
-  @Roles(Role.Doctor)
-  async postAllergic(
-    @Param('userId') id: string,
-    @Body() allergic: AllergicBindings,
-    @User() claims: Claims
-  ): Promise<Allergic> {
-    if (!(await this.doctorService.hasAccess(id, claims))) {
-      throw new ForbiddenException();
+        if (!(await this.doctorService.hasAccess(id, claims))) {
+            throw new ForbiddenException();
+        }
+        await this.userService.assertExists(id);
+        const [allergics, count] = await this.allergicService.findAllAllergic(id, page);
+        return { allergics, count };
     }
-    await this.userService.assertExists(id);
-    return await this.allergicService.addAllergy(allergic, id);
-  }
+
+    @Post(':userId/allergic')
+    @Roles(Role.Doctor)
+    async postAllergic(
+        @Param('userId') id: string,
+        @Body() allergic: AllergicBindings,
+        @User() claims: Claims
+    ): Promise<Allergic> {
+        if (!(await this.doctorService.hasAccess(id, claims))) {
+          throw new ForbiddenException();
+        }
+        await this.userService.assertExists(id);
+        return await this.allergicService.addAllergy(allergic, id);
+    }
 
 
-  @Delete('allergic/:allergicId')
-  @Roles(Role.Doctor)
+    @Delete('allergic/:allergicId')
+    @Roles(Role.Doctor)
     async deleteAllergic(
-      @Param('allergicId') allergicId: string,
-      @User() claims: Claims
-  ): Promise<void> {
-    const userId = await this.allergicService.getUserId(allergicId);
-    if (!(await this.doctorService.hasAccess(userId, claims))) {
-      throw new ForbiddenException();
+        @Param('allergicId') allergicId: string,
+        @User() claims: Claims
+    ): Promise<void> {
+        const userId = await this.allergicService.getUserId(allergicId);
+        if (!(await this.doctorService.hasAccess(userId, claims))) {
+          throw new ForbiddenException();
+        }
+        await this.allergicService.deleteAllergic(allergicId);
     }
-    await this.allergicService.deleteAllergic(allergicId);
-  }
 
     @Put('allergic/:allergicId')
     @Roles(Role.Doctor)
     async editAllergic(
         @Param('allergicId') allergicId: string,
-        @Body() allergic: Allergic,
+        @Body() allergic: AllergicBindings,
         @User() claims: Claims
     ): Promise<Allergic> {
-      const userId = await this.allergicService.getUserId(allergicId);
-      if (!(await this.doctorService.hasAccess(userId, claims))) {
-        throw new ForbiddenException();
-      }
-      return await this.allergicService.editAllergic(allergicId, allergic);
+        const userId = await this.allergicService.getUserId(allergicId);
+        if (!(await this.doctorService.hasAccess(userId, claims))) {
+            throw new ForbiddenException();
+        }
+        return await this.allergicService.editAllergic(allergicId, allergic);
     }
 }

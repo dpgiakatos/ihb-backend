@@ -2,11 +2,9 @@ import { Controller, Post, Body, Get, Param, Put, Redirect } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../app/users/users.service';
-import { User } from './decorators/user.decorator';
 import { LoginBindingModel, RegisterBindingModel, ForgotPassworBindingdModel, ResetPasswordBindingModel } from './models/auth.bindings';
-import { Claims, Role } from './models/claims.interface';
+import { Role } from './models/claims.interface';
 import { LoginViewModel } from './models/auth.viewmodel';
-import { Auth } from './decorators/auth.decorator';
 import { PersonalService } from '../app/users/personal/personal.service';
 import { Token } from './models/token.interface';
 import { Connection } from 'typeorm';
@@ -81,7 +79,6 @@ export class AuthController {
     }
 
     @Get('reset-password/:token')
-    @Redirect()
     async checkToken(
         @Param('token') token: string
     ): Promise<void> {
@@ -94,12 +91,5 @@ export class AuthController {
         @Body() resetPassword: ResetPasswordBindingModel
     ): Promise<void> {
         await this.authService.changePasswordWithToken(token, resetPassword.newPassword);
-    }
-
-    @Get('profile')
-    @Auth
-    // @Roles(Role.Administrator)
-    getProfile(@User() claims: Claims) {
-        return claims;
     }
 }

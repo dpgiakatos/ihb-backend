@@ -2,7 +2,7 @@ export default async () => {
 
     let envConfiguration;
     if (process.env.NODE_ENV === 'production') {
-        envConfiguration = (await import('./production.configuration')).default;
+        envConfiguration = (await import('./production.configuration')).default();
     } else {
         envConfiguration = (await import('./development.configuration')).default;
     }

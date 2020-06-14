@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class LoginBindingModel {
     @IsString()
@@ -10,15 +10,19 @@ export class LoginBindingModel {
 
 export class RegisterBindingModel {
     @IsEmail()
+    @MaxLength(255)
     email: string;
 
     @IsString()
+    @MinLength(8)
     password: string;
 
     @IsString()
+    @MaxLength(255)
     firstName: string;
 
     @IsString()
+    @MaxLength(255)
     lastName: string;
 }
 

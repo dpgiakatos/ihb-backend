@@ -110,13 +110,17 @@ export class AuthService {
     }
 
     async checkTokenValidity(token: string, tokenType: TokenEnum): Promise<Token> {
+        console.log('checking');
         const existingToken = await this.tokenRepository.findOne({ token, tokenType });
         if (!existingToken) {
+            console.log('no existing token');
             throw new NotFoundException();
         }
         else if (this.hasExpired(existingToken.timestamp, tokenType)) {
+            console.log('expired');
             throw new NotFoundException();
         }
+        console.log('existing');
         return existingToken;
     }
 

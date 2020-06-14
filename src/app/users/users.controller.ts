@@ -1,4 +1,4 @@
-import { Controller, Param, Body, Put, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Body, Put, Delete, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { ChangePasswordBindings } from './users.bindings';
@@ -13,16 +13,15 @@ export class UsersController {
         private userService: UsersService
     ) { }
 
-    @Put(':userId/change-password')
+    @Put('change-password')
     async getUser(
-        @Param('userId') id: string,
+        @User() claims: Claims,
         @Body() password: ChangePasswordBindings
     ): Promise<void> {
-        await this.userService.assertExists(id);
-        await this.userService.changePasswordWithOldPassword(id, password.oldPassword, password.password);
+        await this.userService.changePasswordWithOldPassword(claims.id, password.oldPassword, password.password);
     }
 
-    @Delete('delete')
+    @Delete()
     async delete(@User() claims: Claims) {
         const user = await this.userService.findOneById(claims.id);
         if (!user) {

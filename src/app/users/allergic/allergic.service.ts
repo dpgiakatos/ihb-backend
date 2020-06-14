@@ -27,7 +27,7 @@ export class AllergicService {
         return await this.allergicRepository.save(newAllergic);
     }
 
-    async editAllergic(id: string, allergic: Allergic): Promise<Allergic> {
+    async editAllergic(id: string, allergic: AllergicBindings): Promise<Allergic> {
         const existing = await this.allergicRepository.findOne(id);
         if (!existing) {
             throw new NotFoundException();

@@ -1,8 +1,9 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, MaxLength } from 'class-validator';
 import { IsDateOnlyString } from '../../../helpers/date.decorator';
 
 export class AddExtraVaccinationBindingModel {
     @IsString()
+    @MaxLength(255)
     name: string;
 
     @IsDateOnlyString()
@@ -14,6 +15,7 @@ export class AddExtraVaccinationBindingModel {
 
 export class UpdateExtraVaccinationBindingModel {
     @IsString()
+    @MaxLength(255)
     @IsOptional()
     name?: string;
 
@@ -22,6 +24,7 @@ export class UpdateExtraVaccinationBindingModel {
     date?: string;
 
     @IsString()
+    @MaxLength(255)
     @IsOptional()
     description?: string;
 }

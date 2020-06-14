@@ -37,6 +37,7 @@ import { EmailsConsumer } from './consumers/emails.consumer';
         subscribers: [OnValidationSubscriber],
         synchronize: true,
         logging: true,
+        timezone: '-03:00',
         extra: {
           connectionLimit: 50
         }
