@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Put, Redirect } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put, Redirect, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../app/users/users.service';
@@ -11,6 +11,7 @@ import { Connection } from 'typeorm';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
+import { UnprocessableEntityException } from '../helpers/unprocessable-entity-exception.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -25,9 +26,37 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() credentials: LoginBindingModel): Promise<LoginViewModel> {
-        return {
-            accessToken: await this.authService.verifyCredentialsAndGenerateJWT(credentials.email, credentials.password)
-        };
+        const user = await this.usersService.findOneByEmail(credentials.email);
+        if(!user) {
+            throw new UnauthorizedException();
+        }
+
+        const accessToken = await this.authService.verifyCredentialsAndGenerateJWT(user, credentials.password);
+
+        if(!user.verified) {
+            const verifyToken = await this.authService.getVerificationToken(user.id);
+
+            await this.emailQueue.add({
+                to: user.email,
+                template: 'verify',
+                context: {
+                    buttonUrl: `${this.configService.get<string>('apiUrl')}/auth/verify/${verifyToken}`,
+                    title: 'Email verification'
+                },
+                subject: 'Welcome to IHB. Verify your email!'
+            });
+
+            throw new UnprocessableEntityException({ 
+                failingConstraints: {
+                    email: [{
+                        constraint: 'isVerified',
+                        message: 'Email must be verified to login. We have sent you a new verification email.'
+                    }]
+                } 
+            });
+        }
+        
+        return { accessToken };
     }
 
     @Post('register')

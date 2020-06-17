@@ -21,8 +21,7 @@ export class AuthService {
         @InjectRepository(Token) private tokenRepository: Repository<Token>
     ) { }
 
-    async verifyCredentialsAndGenerateJWT(email: string, password: string): Promise<string> {
-        const user = await this.usersService.findOneByEmail(email);
+    async verifyCredentialsAndGenerateJWT(user: User, password: string): Promise<string> {
         await this.verifyCredentials(user, password);
         return this.generateJWT({
             id: user!.id,

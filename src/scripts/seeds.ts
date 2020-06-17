@@ -29,16 +29,20 @@ async function bootstrap() {
     await connection.transaction(async() => {
         const user = await userService.create('user@user.com', 'testtest');
         await authService.setUserRole(user, Role.User);
+        await userService.verify(user);
         const doctor = await userService.create('doctor@doctor.com', 'testtest');
         await authService.setUserRole(doctor, Role.User);
         await authService.setUserRole(doctor, Role.Doctor);
+        await userService.verify(doctor);
         const admin = await userService.create('admin@admin.com', 'testtest');
         await authService.setUserRole(admin, Role.User);
         await authService.setUserRole(admin, Role.Administrator);
+        await userService.verify(admin);
         const superUser = await userService.create('super@super.com', 'testtest');
         await authService.setUserRole(superUser, Role.User);
         await authService.setUserRole(superUser, Role.Doctor);
         await authService.setUserRole(superUser, Role.Administrator);
+        await userService.verify(superUser);
     
         const test = await userService.create('test@test.com', 'testtest');
         await authService.setUserRole(test, Role.User);
