@@ -14,7 +14,7 @@ export class VaccinationsController {
     constructor(
         private vaccinationsService: VaccinationsService,
         private doctorService: DoctorService
-    ) {}
+    ) { }
 
     @Get('vaccinations')
     vaccines(@User() user: Claims): Promise<Vaccine[]> {

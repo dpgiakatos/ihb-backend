@@ -95,7 +95,7 @@ export class AuthController {
         @Body() userEmail: ForgotPassworBindingdModel
     ): Promise<void> {
         const email = userEmail.email;
-        await new Promise(resolve => setTimeout(resolve, 3000)); // TODO
+
         const token = await this.authService.generateForgotPasswordToken(email);
         await this.emailQueue.add({
             to: email,

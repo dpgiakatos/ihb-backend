@@ -34,7 +34,7 @@ export class AdministratorController {
         } else {
             roles = undefined;
         }
-        await new Promise(resolve => setTimeout(resolve, 500)); // TODO
+
         const [users, count] = await this.personalService.findByFiltering(page, { search, role: roles });
 
         return { users, count };

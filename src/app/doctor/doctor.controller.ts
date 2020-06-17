@@ -23,7 +23,7 @@ export class DoctorController {
         if (!search) {
             throw new UnprocessableEntityException('Search parameter is required');
         }
-        await new Promise(resolve => setTimeout(resolve, 500)); // TODO
+
         const [users, count] = await this.doctorService.findPatients(search, country, claims, page);
         return { users, count };
     }
