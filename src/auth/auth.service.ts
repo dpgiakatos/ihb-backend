@@ -35,16 +35,17 @@ export class AuthService {
             user,
             role
         });
-        // if (!(await this.rolesRepository.findOne(userRole))) { // TODO: is this needed?
+        if (!(await this.rolesRepository.findOne(userRole))) {
             await this.rolesRepository.save(userRole);
-        // }
+        }
     }
 
-    async getUserRole(userId: string): Promise<Role[]> {
-        return await this.rolesRepository.find({
+    async getUserRole(userId: string): Promise<RoleEnum[]> {
+        const roles = await this.rolesRepository.find({
             select: ['role'],
             where: [{ user: userId }]
         });
+        return roles.map(role => role.role);
     }
 
     async deleteUserRole(user: User, role: RoleEnum) {
@@ -110,17 +111,13 @@ export class AuthService {
     }
 
     async checkTokenValidity(token: string, tokenType: TokenEnum): Promise<Token> {
-        console.log('checking');
         const existingToken = await this.tokenRepository.findOne({ token, tokenType });
         if (!existingToken) {
-            console.log('no existing token');
             throw new NotFoundException();
         }
         else if (this.hasExpired(existingToken.timestamp, tokenType)) {
-            console.log('expired');
             throw new NotFoundException();
         }
-        console.log('existing');
         return existingToken;
     }
 

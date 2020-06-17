@@ -55,9 +55,9 @@ export class AuthController {
     async verify(@Param('token') token: string) {
         try {
             await this.authService.verify(token);
-            return { url: this.configService.get<string>('frontendUrl')! + '/auth/login' };
+            return { url: this.configService.get<string>('frontendUrl')! + '/auth/login?verify=true' };
         } catch(e) {
-            return { url: this.configService.get<string>('frontendUrl')! + '/404' };
+            return { url: this.configService.get<string>('frontendUrl')! + '/auth/login?verify=false' };
         }
     }
 
@@ -65,7 +65,8 @@ export class AuthController {
     async forgotPassword(
         @Body() userEmail: ForgotPassworBindingdModel
     ): Promise<void> {
-        const email = userEmail.email;        
+        const email = userEmail.email;
+        await new Promise(resolve => setTimeout(resolve, 3000)); // TODO
         const token = await this.authService.generateForgotPasswordToken(email);
         await this.emailQueue.add({
             to: email,
@@ -75,7 +76,6 @@ export class AuthController {
             },
             subject: 'Reset your password'
         });
-
     }
 
     @Get('reset-password/:token')

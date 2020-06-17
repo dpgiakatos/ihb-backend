@@ -7,6 +7,7 @@ export default async () => {
         envConfiguration = (await import('./development.configuration')).default;
     }
     return {
+        production: process.env.NODE_ENV === 'production',
         port: Number(process.env.PORT) || 3000,
         ...envConfiguration,
     };

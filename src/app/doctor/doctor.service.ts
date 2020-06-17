@@ -16,12 +16,11 @@ export class DoctorService {
         private alertRepository: Repository<Alert>
     ) {}
 
-    async find(search: string, country: string | undefined, claims: Claims, page: number): Promise<[Personal[], number]> {
-        if (!country) {
-            return await this.personalService.patientSearchingWithoutFilters(search, claims, page);
-        } else {
-            return await this.personalService.patientSearchingWithFilters(search, country, claims, page);
-        }
+    async findPatients(search: string, country: string | undefined, _claims: Claims, page: number): Promise<[Personal[], number]> {
+        return await this.personalService.findByFiltering(page, {
+            country,
+            search
+        });
     }
 
     async accessToUser(patientId: string, claims: Claims): Promise<void> {
@@ -49,7 +48,7 @@ export class DoctorService {
     }
 
     async getUserAlerts(claims: Claims): Promise<AlertLog[]> {
-        return await this.alertRepository.createQueryBuilder( 'a')
+        return await this.alertRepository.createQueryBuilder('a')
             .select('a.accessTime', 'accessTime')
             .addSelect('p.firstName', 'firstName')
             .addSelect('p.lastName', 'lastName')

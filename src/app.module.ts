@@ -35,21 +35,23 @@ import { EmailsConsumer } from './consumers/emails.consumer';
         password: configService.get('databasePassword'),
         database: 'ihb',
         subscribers: [OnValidationSubscriber],
-        synchronize: true,
-        logging: true,
+        synchronize: !configService.get('production'),
+        logging: !configService.get('production'),
         timezone: '-03:00',
         extra: {
           connectionLimit: 50
         }
       }),
     }),
-    MailerModule.forRoot({
-      transport: { jsonTransport: true },
-      preview: true,
-      template: {
-        dir: __dirname + '/templates',
-        adapter: new EjsAdapter()
-      }
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('mailerOptions'),
+        template: {
+          dir: __dirname + '/templates',
+          adapter: new EjsAdapter()
+        }
+      })
     }),
     ConfigModule.forRoot({
       ignoreEnvFile: true,

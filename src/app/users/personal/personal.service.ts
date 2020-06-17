@@ -1,10 +1,9 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Personal } from './personal.entity';
-import { Repository, DeepPartial, Like, Not } from 'typeorm';
+import { Repository, DeepPartial, Brackets } from 'typeorm';
 import { CreatePersonalBindings } from './personal.bindings';
-import { GetPaginationQuery } from '../../../helpers/pagination-query';
-import { Claims } from '../../../auth/models/claims.interface';
+import { Role } from '../../../auth/models/claims.interface';
 
 @Injectable()
 export class PersonalService {
@@ -41,189 +40,44 @@ export class PersonalService {
         await this.personalRepository.save(existing);
     }
 
-    async patientSearchingWithoutFilters(search: string, claims: Claims, page: number) {
-        return await this.personalRepository.findAndCount({
-            select: [
-                'firstName',
-                'lastName',
-                'ssnvs',
-                'userId'
-            ],
-            where: [
-                { firstName: Like('%' + search + '%'), userId: Not(claims.id) },
-                { lastName: Like('%' + search + '%'), userId: Not(claims.id) },
-                { ssnvs: Like('%' + search + '%'), userId: Not(claims.id) }
-            ],
-            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
-        });
-    }
+    async findByFiltering(page: number, filters?: { country?: string, role?: Role | Role[], search?: string, exceptId?: string }): Promise<[Personal[], number]> {
 
-    async patientSearchingWithFilters(search: string, country: string, claims: Claims, page: number) {
-        return await this.personalRepository.findAndCount({
-            select: [
-                'firstName',
-                'lastName',
-                'ssnvs',
-                'userId'
-            ],
-            where: [
-                { firstName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
-                { lastName: Like('%' + search + '%'), country: country, userId: Not(claims.id) },
-                { ssnvs: Like('%' + search + '%'), country: country, userId: Not(claims.id) }
-            ],
-            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
-        });
-    }
+        const query = this.personalRepository.createQueryBuilder('p');
+        if (filters?.role) {
+            query.innerJoin('user', 'u', 'p.userId=u.id')
+                .innerJoin('role', 'r', 'u.id = r.userId');
+            if(Array.isArray(filters?.role)) {
+                const roles = filters?.role;
+                query.andWhere(new Brackets(qb => {
+                    for(const role of roles) {
+                        qb.orWhere('r.role = :role', { role });
+                    }
+                }));
+            } else {
+                query.andWhere('r.role = :role', { role: filters.role });
+            }
+        }
 
-    async findAllUsers(page: number) {
-        return await this.personalRepository.findAndCount({
-            select: ['firstName', 'lastName', 'userId'],
-            ...GetPaginationQuery(page, 10, { lastName: 'ASC' })
-        });
-    }
+        if(filters?.search) {
+            const search = filters.search;
+            query.andWhere(new Brackets(qb => {
+                qb.where('p.firstName like :firstName', { firstName: '%' + search + '%' });
+                qb.orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' });
+            }))
+        }
 
-    async findAllDoctors(page: number) {
+        if(filters?.country) {
+            query.andWhere('p.country = :country', { country: filters.country });
+        }
+
         return [
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('r.role = :doctor', { doctor: 'Doctor' })
-                .skip((page*10)-10)
+            await query
                 .take(10)
+                .skip((page - 1)* 10)
                 .orderBy('p.lastName')
                 .distinct(true)
                 .getMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('r.role = :doctor', { doctor: 'Doctor' })
-                .distinct(true)
-                .getCount()
-        ];
-    }
-
-    async findAllAdministrators(page: number) {
-        return [
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('r.role = :administrator', { administrator: 'Administrator' })
-                .skip((page*10)-10)
-                .take(10)
-                .orderBy('p.lastName')
-                .distinct(true)
-                .getMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('r.role = :administrator', { administrator: 'Administrator' })
-                .distinct(true)
-                .getCount()
-        ];
-    }
-
-    async findUsersWithRoleDoctorAndAdministrator(page: number) {
-        return [
-            await this.personalRepository.createQueryBuilder('p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
-                .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
-                .skip((page*10)-10)
-                .take(10)
-                .orderBy('p.lastName')
-                .distinct(true)
-                .getMany(),
-            await this.personalRepository.createQueryBuilder('p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
-                .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
-                .distinct(true)
-                .getCount()
-        ];
-    }
-
-    async searchAllUsers(search: string, page: number) {
-        return await this.personalRepository.findAndCount({
-            select: [
-                'userId',
-                'firstName',
-                'lastName'
-            ],
-            where: [
-                { firstName: Like('%' + search + '%') },
-                { lastName: Like('%' + search + '%') }
-            ],
-            ...GetPaginationQuery(page, 10, { ssnvs: 'ASC' })
-        });
-    }
-
-    async searchAllDoctors(search: string, page: number) {
-        return [
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
-                .andWhere('r.role = :doctor', { doctor: 'Doctor' })
-                .skip((page*10)-10)
-                .take(10)
-                .orderBy('p.lastName')
-                .distinct(true)
-                .getMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
-                .andWhere('r.role = :doctor', { doctor: 'Doctor' })
-                .distinct(true)
-                .getCount()
-        ];
-    }
-
-    async searchAllAdministrators(search: string, page: number) {
-        return [
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
-                .andWhere('r.role = :administrator', { administrator: 'Administrator' })
-                .skip((page*10)-10)
-                .take(10)
-                .orderBy('p.lastName')
-                .distinct(true)
-                .getMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'r', 'u.id = r.userId')
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
-                .andWhere('r.role = :administrator', { administrator: 'Administrator' })
-                .distinct(true)
-                .getCount()
-        ];
-    }
-
-    async searchUsersWithRoleDoctorAndAdministrator(search: string, page: number) {
-        return [
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
-                .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
-                .skip((page*10)-10)
-                .take(10)
-                .orderBy('p.lastName')
-                .distinct(true)
-                .getMany(),
-            await this.personalRepository.createQueryBuilder( 'p')
-                .innerJoin('user', 'u', 'p.userId=u.id')
-                .innerJoin('role', 'rD', 'u.id = rD.userId and rD.role = :doctor', { doctor: 'Doctor' })
-                .innerJoin('role', 'rA', 'u.id = rA.userId and rA.role = :administrator', { administrator: 'Administrator' })
-                .where('p.firstName like :firstName', { firstName: '%' + search + '%' })
-                .orWhere('p.lastName like :lastName', { lastName: '%' + search + '%' })
+            await query
                 .distinct(true)
                 .getCount()
         ];
@@ -239,3 +93,4 @@ export class PersonalService {
             .getRawOne();
     }
 }
+
