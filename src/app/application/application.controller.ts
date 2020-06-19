@@ -42,7 +42,7 @@ export class ApplicationController {
             if (file.size > 25000000) {
                 throw new NotImplementedException();
             }
-            await fs.rename(file.path, file.destination + '\\' + claims.id + '.' + suffix);
+            await fs.rename(file.path, file.destination + '/' + claims.id + '.' + suffix);
             await this.applicationService.upload(claims, suffix);
         } catch (e) {
             await fs.unlink(file.path);
