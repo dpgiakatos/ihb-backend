@@ -31,7 +31,7 @@ import { EmailsConsumer } from './consumers/emails.consumer';
         type: 'mysql',
         host: 'localhost',
         port: 3306,
-        username: 'root',
+        username: configService.get('databaseUsername'),
         password: configService.get('databasePassword'),
         database: 'ihb',
         subscribers: [OnValidationSubscriber],

@@ -2,11 +2,15 @@ import { MailerOptions } from '@nestjs-modules/mailer';
 
 export default () => {
     const signingSecret = process.env.SIGNING_SECRET;
+    const databaseUsername = process.env.DATABASE_USERNAME;
     const databasePassword = process.env.DATABASE_PASSWORD;
     const gmailUsername = process.env.GMAIL_USERNAME;
     const gmailPassword = process.env.GMAIL_PASSWORD;
     if (!signingSecret) {
         throw new Error('No SIGNING_SECRET value found in environment');
+    }
+    if (!databaseUsername) {
+        throw new Error('No DATABASE_USERNAME value found in environment');
     }
     if (!databasePassword) {
         throw new Error('No DATABASE_PASSWORD value found in environment');
@@ -21,6 +25,7 @@ export default () => {
     return {
         apiUrl: 'https://internationalhealthbooklet.tech/api',
         frontendUrl: 'https://internationalhealthbooklet.tech/',
+        databaseUsername,
         databasePassword,
         signingSecret,
         redisOptions: {

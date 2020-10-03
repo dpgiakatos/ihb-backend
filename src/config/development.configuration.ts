@@ -5,6 +5,7 @@ export default {
     frontendUrl: 'http://localhost:4200',
     signingSecret: 'secret',
     databasePassword: process.env.DATABASE_PASSWORD || 'root',
+    databaseUsername: process.env.DATABASE_USERNAME || 'root',
     mailerOptions: {
         transport: { jsonTransport: true },
         preview: true,
