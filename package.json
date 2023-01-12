@@ -35,7 +35,7 @@
     "bcrypt": "^4.0.1",
     "bull": "^3.14.0",
     "class-transformer": "^0.2.3",
-    "class-validator": "^0.12.2",
+    "class-validator": "^0.14.0",
     "cls-hooked": "^4.2.2",
     "ejs": "^3.1.2",
     "moment": "^2.25.3",
